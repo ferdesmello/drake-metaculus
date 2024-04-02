@@ -2,114 +2,52 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 
-y1 = [0.11509, 0.11786, 0.12068, 0.12354, 0.12645, 0.12942, 0.13243, 0.13549, 0.13861, 0.14178, 
-     0.14501, 0.1483, 0.15165, 0.15506, 0.15853, 0.16207, 0.16568, 0.16937, 0.17317, 0.17707, 
-     0.18108, 0.18521, 0.18945, 0.19381, 0.19828, 0.20288, 0.2076, 0.21245, 0.21742, 0.22252, 
-     0.22776, 0.23313, 0.23863, 0.24427, 0.25005, 0.25597, 0.26203, 0.26823, 0.27458, 0.28108, 
-     0.28773, 0.29453, 0.30148, 0.30859, 0.31587, 0.32332, 0.33093, 0.33873, 0.34671, 0.35489, 
-     0.36328, 0.37187, 0.38069, 0.38975, 0.39906, 0.40864, 0.41851, 0.42867, 0.43916, 0.45, 
-     0.46012, 0.46802, 0.47418, 0.4793, 0.48418, 0.48951, 0.49586, 0.5036, 0.51295, 0.524, 
-     0.53675, 0.55117, 0.56718, 0.58472, 0.60372, 0.62414, 0.64595, 0.66911, 0.69364, 0.71954, 
-     0.74683, 0.77552, 0.80567, 0.8373, 0.87046, 0.90521, 0.9416, 0.97969, 1.01956, 1.06128, 
-     1.10492, 1.15049, 1.19813, 1.24799, 1.30031, 1.35533, 1.41341, 1.47497, 1.54051, 1.61062, 
-     1.68588, 1.76681, 1.85364, 1.94604, 2.0427, 2.14103, 2.23697, 2.32527, 2.40042, 2.45798, 
-     2.50184, 2.53914, 2.5699, 2.59415, 2.61208, 2.62397, 2.63042, 2.63212, 2.62952, 2.62303, 
-     2.61256, 2.59809, 2.58004, 2.55873, 2.53459, 2.50801, 2.47937, 2.44896, 2.41699, 2.38359, 
-     2.34878, 2.31253, 2.27458, 2.23293, 2.18719, 2.13776, 2.08516, 2.03014, 1.97355, 1.91623, 
-     1.85893, 1.80223, 1.7466, 1.69233, 1.63959, 1.58847, 1.539, 1.4912, 1.44507, 1.40062, 
-     1.35784, 1.31681, 1.27765, 1.2405, 1.20547, 1.17263, 1.142, 1.1135, 1.08697, 1.06214, 
-     1.03866, 1.01607, 0.99385, 0.9714, 0.94809, 0.92326, 0.89635, 0.86692, 0.83296, 0.78833, 
-     0.73529, 0.67815, 0.62115, 0.56749, 0.51896, 0.47617, 0.43894, 0.40668, 0.37866, 0.35416, 
-     0.33253, 0.31324, 0.29588, 0.28011, 0.26567, 0.25235, 0.24001, 0.22851, 0.21776, 0.20768, 
-     0.1982, 0.18927, 0.18085, 0.17288, 0.16535, 0.15822, 0.15145, 0.14503, 0.13894, 0.13315, 
-     0.12765]
+# reading csv data from the API
 
-y2 = [0.03781, 0.03884, 0.0399, 0.04098, 0.0421, 0.04325, 0.04444, 0.04566, 0.04691, 0.0482, 
-      0.04953, 0.0509, 0.0523, 0.05376, 0.05525, 0.05679, 0.05838, 0.06002, 0.06172, 0.06347, 
-      0.06529, 0.06716, 0.06911, 0.07111, 0.07319, 0.07534, 0.07757, 0.07987, 0.08225, 0.08472, 
-      0.08727, 0.08991, 0.09264, 0.09547, 0.0984, 0.10143, 0.10458, 0.10783, 0.11121, 0.11471, 
-      0.11834, 0.12211, 0.12603, 0.1301, 0.13433, 0.13873, 0.14331, 0.14809, 0.15308, 0.15828, 
-      0.16373, 0.16942, 0.17538, 0.18163, 0.18819, 0.19508, 0.20233, 0.20995, 0.21798, 0.22643, 
-      0.23507, 0.24353, 0.25194, 0.26052, 0.2695, 0.27908, 0.28942, 0.30064, 0.31282, 0.32601, 
-      0.34021, 0.35543, 0.37167, 0.38891, 0.40715, 0.42638, 0.4466, 0.46781, 0.49, 0.51319, 
-      0.5374, 0.56263, 0.58891, 0.61627, 0.64473, 0.67434, 0.70514, 0.73716, 0.77046, 0.80508, 
-      0.84106, 0.87843, 0.91724, 0.95752, 0.99931, 1.04268, 1.08765, 1.13428, 1.18264, 1.23277, 
-      1.28473, 1.33857, 1.39427, 1.45173, 1.51072, 1.57079, 1.63129, 1.6914, 1.75023, 1.80706, 
-      1.86235, 1.91702, 1.97098, 2.02411, 2.07631, 2.12747, 2.17751, 2.22637, 2.27388, 2.31987, 
-      2.364, 2.40597, 2.44553, 2.48242, 2.51644, 2.54736, 2.575, 2.59916, 2.61961, 2.63616, 
-      2.64857, 2.65665, 2.66023, 2.65892, 2.65273, 2.6419, 2.62679, 2.6079, 2.58578, 2.56099, 
-      2.53408, 2.50552, 2.47575, 2.44512, 2.41399, 2.38266, 2.35144, 2.32064, 2.29056, 2.26148, 
-      2.2336, 2.207, 2.18155, 2.15684, 2.13205, 2.10594, 2.07686, 2.04291, 2.00219, 1.95321, 
-      1.89519, 1.82834, 1.7538, 1.67347, 1.58956, 1.50421, 1.41923, 1.33594, 1.25474, 1.17442, 
-      1.09578, 1.02, 0.9481, 0.88077, 0.81825, 0.7605, 0.70723, 0.65809, 0.6127, 0.57069, 
-      0.53176, 0.49562, 0.46203, 0.43081, 0.40176, 0.37474, 0.3496, 0.32622, 0.30449, 0.28429, 
-      0.26553, 0.2481, 0.23192, 0.2169, 0.20295, 0.19002, 0.17801, 0.16687, 0.15652, 0.14692, 
-      0.138]
+url_p1 = "https://www.metaculus.com/api2/questions/1337/download_csv/"
+url_p2 = "https://www.metaculus.com/api2/questions/1338/download_csv/"
+url_p3 = "https://www.metaculus.com/api2/questions/1339/download_csv/"
+url_p4 = "https://www.metaculus.com/api2/questions/1340/download_csv/"
+url_p5 = "https://www.metaculus.com/api2/questions/1341/download_csv/"
+url_p6 = "https://www.metaculus.com/api2/questions/1342/download_csv/"
+url_p7 = "https://www.metaculus.com/api2/questions/1343/download_csv/"
 
-df = pd.read_csv("Dados.txt", sep = "	")
+df_p1 = pd.read_csv(url_p3)
 
-print(df)
+# reducing data to just the PDF distribution
+
+df_p1 = df_p1.iloc[-2, 11:211].reset_index(drop = False)
+
+df_p1.columns = ['x_norm', 'PDF']
+
+df_p1["x_norm"].replace(to_replace = "pdf_at_", value = "", regex = True, inplace = True)
+
+df_p1["x_norm"] = df_p1["x_norm"].astype("float")
+df_p1["PDF"] = df_p1["PDF"].astype("float")
+df_p1["x"] = df_p1["x_norm"].apply(lambda x : 10**-6 + x*(100 - 10**-6))
+
+
+
+print(df_p1["PDF"].max())
+
+
+print(df_p1.info())
+print(df_p1.shape)
+print(df_p1.head())
+print(df_p1.tail())
 
 
 
 #-------------------------------------------
-print(len(y1), len(y2))
+# Figures
 
-#-------------------------------------------
 fig1, ax1 = plt.subplots(figsize = (10, 6))
 
-ax1.hist(y1, 
-         #range = (45, 200), 
-         histtype = "step", 
-         fill = True, 
-         density = True, 
-         #alpha = 0.2, 
-         #bins = 50, 
-         color = (1.0, 0.0, 0.0, 0.1), 
-         edgecolor = "red", 
-         linewidth = 2,
-         label = "y1")
+ax1.plot(df_p1["x"], df_p1["PDF"],
+         color = "red",
+         linewidth = 2)
 
-ax1.hist(y2, 
-         #range = (45, 200), 
-         histtype = "step", 
-         fill = True, 
-         density = True, 
-         #alpha = 0.2, 
-         #bins = 50, 
-         color = (0.0, 0.5, 0.5, 0.1), 
-         edgecolor = (0.0, 0.5, 0.5, 1.0), 
-         linewidth = 2,
-         label = "y2")
-
-#plt.legend()
-
-# Design
-ax1.set_xlabel("y", fontsize = 12)
-ax1.set_ylabel("Frequency", fontsize = 12)
-ax1.set_title("Metaculus", fontsize = 16, pad = 20)
-
-ax1.grid(True, linestyle = ":", linewidth = "1")
-
-# Axes
-#ax1.set_xlim(45, 200)
-#ax1.set_ylim(0, 300)
-#plt.yscale("log")
-
-ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "inout", length = 7)
-ax1.tick_params(which = "minor", direction = "in", length = 2)
-ax1.tick_params(which = "both", bottom = True, top = True, left=True, right = True)
-ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
-
-plt.savefig("Y Metaculus.png", bbox_inches = "tight")
-
-#-------------------------------------------
-fig2, ax2 = plt.subplots(figsize = (10, 6))
-
-ax2.plot(df["prob"], df["pdf"])
-
-"""ax2.hist(y1, 
+"""ax1.hist(y1, 
          #range = (45, 200), 
          histtype = "step", 
          fill = True, 
@@ -124,22 +62,22 @@ ax2.plot(df["prob"], df["pdf"])
 #plt.legend()
 
 # Design
-ax2.set_xlabel("average number of habitable planets per star", fontsize = 12)
-ax2.set_ylabel("probability", fontsize = 12)
-ax2.set_title("PDF Metaculus", fontsize = 16, pad = 20)
+ax1.set_xlabel("average number of habitable planets per star", fontsize = 12)
+ax1.set_ylabel("probability", fontsize = 12)
+ax1.set_title("PDF Metaculus", fontsize = 16, pad = 20)
 
-ax2.grid(True, linestyle = ":", linewidth = "1")
+ax1.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
-#ax2.set_xlim(45, 200)
-#ax2.set_ylim(0, 300)
-#plt.yscale("log")
+#ax1.set_xlim(45, 200)
+#ax1.set_ylim(0, 300)
+#plt.xscale("log")
 
-ax2.minorticks_on()
-ax2.tick_params(which = "major", direction = "inout", length = 7)
-ax2.tick_params(which = "minor", direction = "in", length = 2)
-ax2.tick_params(which = "both", bottom = True, top = True, left=True, right = True)
-ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
+ax1.minorticks_on()
+ax1.tick_params(which = "major", direction = "inout", length = 7)
+ax1.tick_params(which = "minor", direction = "in", length = 2)
+ax1.tick_params(which = "both", bottom = True, top = True, left=True, right = True)
+ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
 plt.savefig("pdf Metaculus.png", bbox_inches = "tight")
 

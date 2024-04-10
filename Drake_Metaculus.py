@@ -6,16 +6,16 @@ from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from statsmodels.distributions.empirical_distribution import ECDF
-import scipy.stats
+import scipy.stats as stats
 
 # reading csv data from the API
-url_f1 = "https://www.metaculus.com/api2/questions/1337/download_csv/"
-url_f2 = "https://www.metaculus.com/api2/questions/1338/download_csv/"
-url_f3 = "https://www.metaculus.com/api2/questions/1339/download_csv/"
-url_f4 = "https://www.metaculus.com/api2/questions/1340/download_csv/"
-url_f5 = "https://www.metaculus.com/api2/questions/1341/download_csv/"
-url_f6 = "https://www.metaculus.com/api2/questions/1342/download_csv/"
-url_f7 = "https://www.metaculus.com/api2/questions/1343/download_csv/"
+url_Rs = "https://www.metaculus.com/api2/questions/1337/download_csv/"
+url_fp = "https://www.metaculus.com/api2/questions/1338/download_csv/"
+url_ne = "https://www.metaculus.com/api2/questions/1339/download_csv/"
+url_fl = "https://www.metaculus.com/api2/questions/1340/download_csv/"
+url_fi = "https://www.metaculus.com/api2/questions/1341/download_csv/"
+url_fc = "https://www.metaculus.com/api2/questions/1342/download_csv/"
+url_L = "https://www.metaculus.com/api2/questions/1343/download_csv/"
 
 # Reading and processing data
 print("Reading...")
@@ -75,43 +75,44 @@ def cdf_setter(url, xmin, xmax, q = 10000):
 
 #--------------------------------
 
-quantity = 50000
+quantity = 100000
 
-df_f1_cdf, df_f1_pdf = cdf_setter(url = url_f1, xmin = 0.01, xmax = 1000, q = quantity)
-print("f1 done!")
-df_f2_cdf, df_f2_pdf = cdf_setter(url = url_f2, xmin = 0.01, xmax = 1, q = quantity)
-print("f2 done!")
-df_f3_cdf, df_f3_pdf = cdf_setter(url = url_f3, xmin = 10**-6, xmax = 100, q = quantity)
-print("f3 done!")
-df_f4_cdf, df_f4_pdf = cdf_setter(url = url_f4, xmin = 10**-31, xmax = 1, q = quantity)
-print("f4 done!")
-df_f5_cdf, df_f5_pdf = cdf_setter(url = url_f5, xmin = 10**-20, xmax = 1, q = quantity)
-print("f5 done!")
-df_f6_cdf, df_f6_pdf = cdf_setter(url = url_f6, xmin = 10**-5, xmax = 1, q = quantity)
-print("f6 done!")
-df_f7_cdf, df_f7_pdf = cdf_setter(url = url_f7, xmin = 10, xmax = 10**10, q = quantity)
-print("f7 done!")
+df_Rs_cdf, df_Rs_pdf = cdf_setter(url = url_Rs, xmin = 0.01, xmax = 1000, q = quantity)
+print("Rs done!")
+df_fp_cdf, df_fp_pdf = cdf_setter(url = url_fp, xmin = 0.01, xmax = 1, q = quantity)
+print("fp done!")
+df_ne_cdf, df_ne_pdf = cdf_setter(url = url_ne, xmin = 10**-6, xmax = 100, q = quantity)
+print("ne done!")
+df_fl_cdf, df_fl_pdf = cdf_setter(url = url_fl, xmin = 10**-31, xmax = 1, q = quantity)
+print("fl done!")
+df_fi_cdf, df_fi_pdf = cdf_setter(url = url_fi, xmin = 10**-20, xmax = 1, q = quantity)
+print("fi done!")
+df_fc_cdf, df_fc_pdf = cdf_setter(url = url_fc, xmin = 10**-5, xmax = 1, q = quantity)
+print("fc done!")
+df_L_cdf, df_L_pdf = cdf_setter(url = url_L, xmin = 10, xmax = 10**10, q = quantity)
+print("L done!")
 
 #-------------------------------------------
 # Multiplying the factors
 print("Multiplying...")
 
-f_samples = (df_f1_cdf["x_log"] * 
-             df_f2_cdf["x_log"] * 
-             df_f3_cdf["x_log"] * 
-             df_f4_cdf["x_log"] * 
-             df_f5_cdf["x_log"] * 
-             df_f6_cdf["x_log"] * 
-             df_f7_cdf["x_log"])
+N_cdf = (df_Rs_cdf["x_log"] * 
+         df_fp_cdf["x_log"] * 
+         df_ne_cdf["x_log"] * 
+         df_fl_cdf["x_log"] * 
+         df_fi_cdf["x_log"] * 
+         df_fc_cdf["x_log"] * 
+         df_L_cdf["x_log"])
 
 #-------------------------------------------
 print("Making Figures...")
 # Figures
+
 #----------------------
 # Function to make the histograms sub figures
 def histogram(ax, df_f, color, edgecolor, label, xlabel, title):
 
-    logbins = np.logspace(np.log10(min(df_f)), np.log10(max(df_f)), 50)
+    logbins = np.logspace(np.log10(min(df_f)), np.log10(max(df_f)), 1000)
 
     ax.hist(df_f,
             histtype = "step",
@@ -154,7 +155,7 @@ fig1.suptitle("Counts by CDF", fontsize = 14)
 #HISTOGRAMS
 #F1
 histogram(ax = ax1, 
-          df_f = df_f1_cdf["x_log"],
+          df_f = df_Rs_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f1", 
@@ -162,7 +163,7 @@ histogram(ax = ax1,
           title = "$R_{*}$")
 #F2
 histogram(ax = ax2, 
-          df_f = df_f2_cdf["x_log"],
+          df_f = df_fp_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f2", 
@@ -170,7 +171,7 @@ histogram(ax = ax2,
           title = "$f_{p}$")
 #F3
 histogram(ax = ax3, 
-          df_f = df_f3_cdf["x_log"],
+          df_f = df_ne_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f3", 
@@ -178,7 +179,7 @@ histogram(ax = ax3,
           title = "$n_{e}$")
 #F4
 histogram(ax = ax4, 
-          df_f = df_f4_cdf["x_log"],
+          df_f = df_fl_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f4", 
@@ -186,7 +187,7 @@ histogram(ax = ax4,
           title = "$f_{l}$")
 #F5
 histogram(ax = ax5, 
-          df_f = df_f5_cdf["x_log"],
+          df_f = df_fi_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f5", 
@@ -194,7 +195,7 @@ histogram(ax = ax5,
           title = "$f_{i}$")
 #F6
 histogram(ax = ax6, 
-          df_f = df_f6_cdf["x_log"],
+          df_f = df_fc_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f6", 
@@ -202,15 +203,15 @@ histogram(ax = ax6,
           title = "$f_{c}$")
 #F7
 histogram(ax = ax7, 
-          df_f = df_f7_cdf["x_log"],
+          df_f = df_L_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f7", 
           xlabel = "Years a civilization remains detectable", 
           title = "$L$")
-#F final
+#F final PDF
 histogram(ax = ax8, 
-          df_f = f_samples,
+          df_f = N_cdf,
           color = (1.0, 0.0, 0.0, 0.1),
           edgecolor = "red",
           label = "Histo N", 
@@ -218,10 +219,10 @@ histogram(ax = ax8,
           title = "$N$, number of civilizations in our galaxy")
 
 #----------------------
-#F final
-logbins = np.logspace(np.log10(min(f_samples)), np.log10(max(f_samples)), 50)
+#F final CDF
+logbins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 50)
 
-ax9.ecdf(f_samples, 
+ax9.ecdf(N_cdf, 
          color = "red", 
          linewidth = 2,
          label = "Histo N ecdf")
@@ -241,8 +242,8 @@ ax9.tick_params(which = "minor", direction = "in", length = 2)
 ax9.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-ecdft = ECDF(f_samples)
-points = np.logspace(start = -40, stop = 12, num = 1000)
+ecdft = ECDF(N_cdf)
+points = np.logspace(start = -49, stop = 12, num = 1000)
 ax9.fill_between(points, ecdft(points), color = "red", alpha = 0.1)
                  
 #----------------------
@@ -295,67 +296,67 @@ fig2.suptitle("Factors by Metaculus", fontsize = 14)
 #PLOTS
 #F1
 plot(ax = ax1, 
-     df_f = df_f1_pdf,
+     df_f = df_Rs_pdf,
      color = "blue",
      label = "Plot f1",
      xlabel = "Average SFR of suitable stars [stars/year]",
      title = "$R_{*}$")
 #F2
 plot(ax = ax2,
-     df_f = df_f2_pdf,
+     df_f = df_fp_pdf,
      color = "blue",
      label = "Plot f2", 
      xlabel = "Fraction of stars that form planets",
      title = "$f_{p}$")
 #F3
 plot(ax = ax3, 
-     df_f = df_f3_pdf,
+     df_f = df_ne_pdf,
      color = "blue",
      label = "Plot f3",
      xlabel = "Average number of habitable planets per star", 
           title = "$n_{e}$")
 #F4
 plot(ax = ax4, 
-     df_f = df_f4_pdf,
+     df_f = df_fl_pdf,
      color = "blue",
      label = "Plot f4", 
      xlabel = "Fraction of habitable planets in which life emerges", 
      title = "$f_{l}$")
 #F5
 plot(ax = ax5, 
-     df_f = df_f5_pdf,
+     df_f = df_fi_pdf,
      color = "blue",
      label = "Plot f5", 
      xlabel = "Fraction of habitable planets where intelligence life emerges", 
      title = "$f_{i}$")
 #F6
 plot(ax = ax6, 
-     df_f = df_f6_pdf,
+     df_f = df_fc_pdf,
      color = "blue",
      label = "Plot f6", 
      xlabel = "Fraction of planets where life is capable of interstellar communication", 
      title = "$f_{c}$")
 #F7
 plot(ax = ax7, 
-     df_f = df_f7_pdf,
+     df_f = df_L_pdf,
      color = "blue",
      label = "Plot f7", 
      xlabel = "Years a civilization remains detectable", 
      title = "$L$")
-#F final PDF
+#F final
 histogram(ax = ax8, 
-          df_f = f_samples,
+          df_f = N_cdf,
           color = (1.0, 0.0, 0.0, 0.1),
           edgecolor = "red",
           label = "Histo N", 
           xlabel = "Number of civilizations in our Galaxy", 
-          title = "$N$")
+          title = "$N$, number of civilizations in our galaxy")
 
 #----------------------
 #F final CDF
-logbins = np.logspace(np.log10(min(f_samples)), np.log10(max(f_samples)), 50)
+logbins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 50)
 
-ax9.ecdf(f_samples, 
+ax9.ecdf(N_cdf, 
          color = "red", 
          linewidth = 2,
          label = "Histo N ecdf")
@@ -375,7 +376,7 @@ ax9.tick_params(which = "minor", direction = "in", length = 2)
 ax9.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-#ecdft = ECDF(f_samples)
+#ecdft = ECDF(N_cdf)
 #points = np.logspace(start = -40, stop = 11, num = 1000)
 ax9.fill_between(points, ecdft(points), color = "red", alpha = 0.1)
 
@@ -384,6 +385,55 @@ ax9.fill_between(points, ecdft(points), color = "red", alpha = 0.1)
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDF.png", bbox_inches = "tight")
+
+
+
+
+
+
+
+#-------------------------------------------
+# To normalize the N plot
+fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (0.1, 0.1))
+
+_, bins, _ = ax.hist(N_cdf, bins = 1000) # n, bins, patches
+
+logbins = np.logspace(np.log10(bins[0]), np.log10(bins[-1]), len(bins))
+#logbins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 50)
+
+weights = np.zeros_like(N_cdf) + 1./10000
+
+fig, ax = plt.subplots(nrows = 1, ncols = 1, figsize = (8, 6))
+
+ax.hist(N_cdf,
+         histtype = "step",
+         fill = True,
+         bins = logbins,
+         weights = weights, 
+         color = (0.1, 0.0, 0.0, 0.1),
+         edgecolor = "red", 
+         linewidth = 2,
+         label = "Histo N")
+
+# Design
+ax.set_xlabel("Number of civilizations in our Galaxy", fontsize = 8)
+ax.set_ylabel("Probability", fontsize = 10)
+ax.set_title("$N$", fontsize = 12, pad = 10)
+ax.grid(True, linestyle = ":", linewidth = "1")
+
+# Axes
+ax.set_xscale("log")
+
+ax.minorticks_on()
+ax.tick_params(which = "major", direction = "inout", length = 7)
+ax.tick_params(which = "minor", direction = "in", length = 2)
+ax.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
+ax.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
+#-------------------------------------------
+
+
+
+
 
 #-------------------------------------------
 print("All done!")

@@ -1,7 +1,9 @@
 # Drake-Metaculus
-Calculating the Drake equation using Metaculus prediction data for every factor:
+Run the .py file. It will download API data from Metaculus's questions about for 7 factors of the Drake equation. The most recent prediction data - the PDFs for the value of every factor - will be parsed and used to calculate N, the PDF of the number of detectable alien civilizations in our Galaxy. And the result will be presented in some figures.
 
-[Fermi Paradox Series](https://www.metaculus.com/project/2994/)
+See the links bellow:
+
+[Fermi Paradox Series on Metaculus](https://www.metaculus.com/project/2994/)
 
 [1st Parameter R∗](https://www.metaculus.com/questions/1337/drakes-equation-1st-parameter-r/)
 [2nd parameter f_p](https://www.metaculus.com/questions/1338/drakes-equation-2nd-parameter-f_p/)

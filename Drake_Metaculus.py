@@ -14,12 +14,11 @@ url_ne = "https://www.metaculus.com/api2/questions/1339/download_csv/"
 url_fl = "https://www.metaculus.com/api2/questions/1340/download_csv/"
 url_fi = "https://www.metaculus.com/api2/questions/1341/download_csv/"
 url_fc = "https://www.metaculus.com/api2/questions/1342/download_csv/"
-url_L = "https://www.metaculus.com/api2/questions/1343/download_csv/"
-
+url_L  = "https://www.metaculus.com/api2/questions/1343/download_csv/"
 
 quantity = 10**6 # quantity of data in the simulation
 
-# function to read, format, reduce, and transform data
+# function to read, format, reduce, and transform the data
 def cdf_setter(url, xmin, xmax, q = 1000):
 
      # dataframe for use later
@@ -375,27 +374,24 @@ plot(ax = ax7,
 
 #----------------------
 # N smooth
-
 # Normalizing histogram counts
 log_bin_edges = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 101)
 
-counts, _ = np.histogram(N_cdf, bins = log_bin_edges) #counts, bins
+counts, _ = np.histogram(N_cdf, bins = log_bin_edges) # counts, bins
 
 log_bin_widths = np.diff(log_bin_edges)
 total_observations = counts.sum()
-density = counts / total_observations#(log_bin_widths * total_observations)
+density = counts / total_observations
 
 # Interpolating on the data from the histogram
 log_bin_midpoints = (log_bin_edges[:-1] + log_bin_edges[1:]) / 2
 bin_midpoints = np.log10(log_bin_midpoints)
-interpolation = inter.UnivariateSpline(bin_midpoints, density, s = 10**-6)
+interpolation = inter.UnivariateSpline(bin_midpoints, density, s = 5*10**-7)
 
 # Data for the smooth curve
 bin_edges = np.log10(log_bin_edges[1:])
 N_PDF = interpolation(bin_edges)
 
-#verification = simps(N_PDF, log_bin_edges[1:])
-#print(verification)
 #-----------
 ax8.plot(log_bin_midpoints, N_PDF, 
          color = "red", 
@@ -443,8 +439,6 @@ ax9.tick_params(which = "minor", direction = "in", length = 2)
 ax9.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-#ecdft = ECDF(N_cdf)
-#points = np.logspace(start = -40, stop = 11, num = 1000)
 ax9.fill_between(logbins, ecdft(logbins), color = "red", alpha = 0.1)
 
 #----------------------
@@ -589,7 +583,7 @@ ax2.vlines(x = 1,
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
-text = "Probability to be alone \nin the Milky Way galaxy: \n$N = 1$: " + formatted_probability
+text = "Probability to be alone \nin the Milky Way galaxy: \n($N = 1$): " + formatted_probability
 ax2.text(10**-27, 0.7, text, fontsize = 10)
 
 #---------
@@ -613,7 +607,7 @@ ax2.vlines(x = 5*10**-13,
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
-text = "Probability to be alone \nin the observable Universe: \n$N = 5 \\times 10^{{-13}}$: " + formatted_probability
+text = "Probability to be alone \nin the observable Universe: \n($N = 5 \\times 10^{{-13}}$): " + formatted_probability
 ax2.text(10**-42, 0.15, text, fontsize = 10)
 
 #----------------------

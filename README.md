@@ -1,26 +1,27 @@
 # Drake-Metaculus
-This code calculate the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions, not point estimates. this is done using prediction data from [Metaculus](https://www.metaculus.com/home/).
+
+This code calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions, not point estimates. This is done using prediction data from [Metaculus](https://www.metaculus.com/home/).
 
 ## The Drake equation:
 
-{\displaystyle N=R_{*}\cdot f_{\mathrm {p} }\cdot n_{\mathrm {e} }\cdot f_{\mathrm {l} }\cdot f_{\mathrm {i} }\cdot f_{\mathrm {c} }\cdot L}
+$N = R_{*}\cdot f_{p}\cdot n_{e}\cdot f_{l}\cdot f_{i}\cdot f_{c}\cdot L$
 where
 
-N = the number of civilizations in the Milky Way galaxy with which communication might be possible (i.e. which are on the current past light cone);
+$N$ = the number of civilizations in the Milky Way galaxy with which communication might be possible (i.e. which are on the current past light cone);
 
 and
 
-R∗ = the average rate of star formation in our Galaxy.
-fp = the fraction of those stars that have planets.
-ne = the average number of planets that can potentially support life per star that has planets.
-fl = the fraction of planets that could support life that actually develop life at some point.
-fi = the fraction of planets with life that go on to develop intelligent life (civilizations).
-fc = the fraction of civilizations that develop a technology that releases detectable signs of their existence into space.
-L = the length of time for which such civilizations release detectable signals into space.
+$R_{∗}$ = the average rate of star formation in our Galaxy.
+$f_{p}$ = the fraction of those stars that have planets.
+$n_{e}$ = the average number of planets that can potentially support life per star that has planets.
+$f_{l}$ = the fraction of planets that could support life that actually develop life at some point.
+$f_{i}$ = the fraction of planets with life that go on to develop intelligent life (civilizations).
+$f_{c}$ = the fraction of civilizations that develop a technology that releases detectable signs of their existence into space.
+$L$ = the length of time for which such civilizations release detectable signals into space.
 
 ## The code
 
-Run the .py file. It will download API data from Metaculus's questions about the 7 factors of the Drake equation. The most recent prediction data - the PDFs and CDFs for every factor - will be parsed and used to calculate N, the PDF of the number of detectable alien civilizations in our Galaxy. And the result will be presented in some figures.
+Run the .py file. It will download API data from Metaculus's questions about the 7 factors of the Drake equation. The most recent prediction data - the PDFs and CDFs for every factor - will be parsed and used to calculate $N$, the PDF of the number of detectable alien civilizations in our Galaxy. And the result will be presented in some figures.
 
 ## The questions
 

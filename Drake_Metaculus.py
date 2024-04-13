@@ -3,10 +3,13 @@ import pandas as pd
 from scipy.integrate import simps
 from scipy import interpolate as inter
 from scipy.interpolate import CubicSpline
+from scipy.stats import gaussian_kde
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from statsmodels.distributions.empirical_distribution import ECDF
 
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # urls of the csv data from the API
 url_Rs = "https://www.metaculus.com/api2/questions/1337/download_csv/"
 url_fp = "https://www.metaculus.com/api2/questions/1338/download_csv/"
@@ -16,8 +19,8 @@ url_fi = "https://www.metaculus.com/api2/questions/1341/download_csv/"
 url_fc = "https://www.metaculus.com/api2/questions/1342/download_csv/"
 url_L  = "https://www.metaculus.com/api2/questions/1343/download_csv/"
 
-quantity = 10**6 # quantity of data in the simulation
-
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # function to read, format, reduce, and transform the data
 def cdf_setter(url, xmin, xmax, q = 1000):
 
@@ -60,7 +63,7 @@ def cdf_setter(url, xmin, xmax, q = 1000):
      # Normalizing the PDF values so that the sum equals 1
      df_pdf['PDF'] = df_pdf["PDF"] / total_area
      #df_pdf['PDF'] = df_pdf["PDF"] / df_pdf["PDF"].sum()
-
+     
      # inverse interpolation
      inverse_cdf = CubicSpline(df_cdf["CDF"], df_cdf["x_log"])
 
@@ -73,9 +76,12 @@ def cdf_setter(url, xmin, xmax, q = 1000):
 
      return cdf_f.copy(), df_pdf.copy()
 
-#--------------------------------
-# executing the function on the data
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Running the function
 print("Reading and reducing the data...")
+
+quantity = 10**6 # quantity of data in the simulation
 
 df_Rs_cdf, df_Rs_pdf = cdf_setter(url = url_Rs, xmin = 0.01, xmax = 1000, q = quantity)
 print("Rs done!")
@@ -92,7 +98,8 @@ print("fc done!")
 df_L_cdf, df_L_pdf = cdf_setter(url = url_L, xmin = 10, xmax = 10**10, q = quantity)
 print("L done!")
 
-#-------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Multiplying the factors
 print("Multiplying the factors...")
 
@@ -104,31 +111,37 @@ N_cdf = (df_Rs_cdf["x_log"] *
          df_fc_cdf["x_log"] * 
          df_L_cdf["x_log"])
 
-#-------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Making the figures
+#------------------------------------------------------------------------------
+# HISTOGRAMS
 print("Making the histograms...")
 
-#----------------------
+# number of bins for the histograms
+nbins = 1000
+#---------------------------------------
 # Function to make the histograms sub figures
 def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
 
-     logbins = np.logspace(np.log10(min(df_f)), np.log10(max(df_f)), nbins)
+     log_space_bins = np.logspace(np.log10(min(df_f)), np.log10(max(df_f)), nbins)
+     # I am just using the frequency per bin, it is not a normalization.
      weights = np.zeros_like(df_f) + 1./q
 
      ax.hist(df_f,
              histtype = "step",
              fill = True,
-             bins = logbins,
+             bins = log_space_bins,
              weights = weights,
              color = color,
              edgecolor = edgecolor, 
-             linewidth = 2,
+             linewidth = 1,
              label = label)
 
      # Design
-     ax.set_xlabel(xlabel, fontsize = 8)
+     ax.set_xlabel(xlabel, fontsize = 12)
      ax.set_ylabel("Frequency", fontsize = 10)
-     ax.set_title(title, fontsize = 12, pad = 10)
+     ax.set_title(title, fontsize = 10, pad = 10)
      #ax.grid(True, linestyle = ":", linewidth = "1")
 
      # Axes
@@ -140,7 +153,7 @@ def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
      ax.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
      ax.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-#-------------------------------------------
+#-------------------------------------------------------------------------------
 # Creating a figure object with size 14x8 inches and 9 subfigs
 fig1, axes = plt.subplots(nrows = 3,
                           ncols = 3,
@@ -151,20 +164,30 @@ ax1, ax2, ax3 = axes[0, 0], axes[0, 1], axes[0, 2]
 ax4, ax5, ax6 = axes[1, 0], axes[1, 1], axes[1, 2]
 ax7, ax8, ax9 = axes[2, 0], axes[2, 1], axes[2, 2]
 
-fig1.suptitle("Counts by the CDF", fontsize = 14)
-
-#----------------------
-# HISTOGRAMS
-nbins = 100
-
+#---------------------------------------
+# All this just to print a number preaty in the figure
+# Converting number of simulations to float
+number = float(quantity)
+# Converting to scientific notation string to ensure exponent extraction
+sci_notation = f"{number:.0e}"
+# Extract the exponent part after 'e'
+power = sci_notation.split('0')[1]
+# Using LaTeX
+LaTeX = f"$10^{{{power}}}$"
+# All the text for the subtitle
+text = "Frequencies given by Metaculus' CDFs, n = " + LaTeX
+#print(text)
+# Aigure subtitle
+fig1.suptitle(text, fontsize = 14)
+#------------------------------------------------------------------------------
 # Rs
 histogram(ax = ax1, 
           df_f = df_Rs_cdf["x_log"],
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f1", 
-          xlabel = "Average SFR of suitable stars [stars/year]", 
-          title = "$R_{*}$", 
+          xlabel = "$R_{*}$ [stars/year]", 
+          title = "Average SFR of suitable stars in our Galaxy", 
           q = quantity,
           nbins = nbins)
 # fp
@@ -173,8 +196,8 @@ histogram(ax = ax2,
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f2", 
-          xlabel = "Fraction of stars that form planets", 
-          title = "$f_{p}$", 
+          xlabel = "$f_{p}$", 
+          title = "Fraction of stars that have planets", 
           q = quantity,
           nbins = nbins)
 # ne
@@ -183,8 +206,8 @@ histogram(ax = ax3,
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f3", 
-          xlabel = "Average number of habitable planets per star", 
-          title = "$n_{e}$", 
+          xlabel = "$n_{e}$", 
+          title = "Average number of habitable planets per star", 
           q = quantity,
           nbins = nbins)
 # fl
@@ -193,8 +216,8 @@ histogram(ax = ax4,
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f4", 
-          xlabel = "Fraction of habitable planets in which life emerges", 
-          title = "$f_{l}$", 
+          xlabel = "$f_{l}$", 
+          title = "Fraction of habitable planets \nthat develops life", 
           q = quantity,
           nbins = nbins)
 # fi
@@ -203,8 +226,8 @@ histogram(ax = ax5,
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f5", 
-          xlabel = "Fraction of habitable planets where intelligence life emerges", 
-          title = "$f_{i}$", 
+          xlabel = "$f_{i}$", 
+          title = "Fraction of habitable planets that \ndevelops intelligent life (civilizations)", 
           q = quantity,
           nbins = nbins)
 # fc
@@ -213,8 +236,8 @@ histogram(ax = ax6,
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f6", 
-          xlabel = "Fraction of planets where life is capable of interstellar communication", 
-          title = "$f_{c}$", 
+          xlabel = "$f_{c}$", 
+          title = "Fraction of civilizations that \nreleases detectable signs", 
           q = quantity,
           nbins = nbins)
 # L
@@ -223,41 +246,41 @@ histogram(ax = ax7,
           color = (0.0, 0.0, 1.0, 0.1),
           edgecolor = "blue",
           label = "Histo f7", 
-          xlabel = "Years a civilization remains detectable", 
-          title = "$L$", 
+          xlabel = "$L$ [Years]", 
+          title = "Years a civilization releases detectable signs", 
           q = quantity,
           nbins = nbins)
-# N PDF
+# N
 histogram(ax = ax8, 
           df_f = N_cdf,
           color = (1.0, 0.0, 0.0, 0.1),
           edgecolor = "red",
           label = "Histo N", 
-          xlabel = "Number of civilizations in our Galaxy", 
-          title = "$N$, number of civilizations in our galaxy", 
+          xlabel = "$N$", 
+          title = "Number of civilizations in our Galaxy", 
           q = quantity,
           nbins = nbins)
 
-#----------------------
-# N CDF
-logbins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), nbins)
+#------------------------------------------------------------------------------
+# N cumulative fraction
+log_space_bins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), nbins)
 weights = np.zeros_like(N_cdf) + 1./quantity
 
 ax9.hist(N_cdf, 
-         bins = logbins, 
+         bins = log_space_bins, 
          histtype = "step",
          fill = True,
          weights = weights,
          cumulative = True, 
          color = (1.0, 0.0, 0.0, 0.1),
          edgecolor = "red",
-         linewidth = 2, 
+         linewidth = 1, 
          label = "Histo N cumulative")
 
 # Design
-ax9.set_xlabel("Number of civilizations in our Galaxy", fontsize = 8)
+ax9.set_xlabel("$N$", fontsize = 12)
 ax9.set_ylabel("Cumulative frequency", fontsize = 10)
-ax9.set_title("CDF of $N$", fontsize = 12, pad = 10)
+ax9.set_title("CDF of the number of civilizations in our Galaxy", fontsize = 10, pad = 10)
 #ax9.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
@@ -270,15 +293,19 @@ ax9.tick_params(which = "both", bottom = True, top = True, left = True, right = 
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
 ecdft = ECDF(N_cdf)
-ax9.fill_between(logbins, ecdft(logbins), color = "red", alpha = 0.1)
+ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
                  
-#----------------------
+#------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus histos.png", bbox_inches = "tight")
 
-#-------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# PLOTS
+print("Making the plots...")
+#---------------------------------------
 # Function to make the plot sub figures
 def plot(ax, df_f, color, label, xlabel, title):
 
@@ -289,9 +316,9 @@ def plot(ax, df_f, color, label, xlabel, title):
             label = label)
 
     # Design
-    ax.set_xlabel(xlabel, fontsize = 8)
+    ax.set_xlabel(xlabel, fontsize = 12)
     ax.set_ylabel("Probability", fontsize = 10)
-    ax.set_title(title, fontsize = 12, pad = 10)
+    ax.set_title(title, fontsize = 10, pad = 10)
     #ax.grid(True, linestyle = ":", linewidth = "1")
 
     # Axes
@@ -304,8 +331,7 @@ def plot(ax, df_f, color, label, xlabel, title):
     ax.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
     ax.fill_between(df_f['x_log'], df_f['PDF'], color = "blue", alpha = 0.1)
-#-------------------------------------------
-# PLOTS
+#------------------------------------------------------------------------------
 # Create a figure object with size 14x8 inches and 9 subfigs
 fig2, axes = plt.subplots(nrows = 3,
                           ncols = 3,
@@ -317,107 +343,95 @@ ax4, ax5, ax6 = axes[1, 0], axes[1, 1], axes[1, 2]
 ax7, ax8, ax9 = axes[2, 0], axes[2, 1], axes[2, 2]
 
 fig2.suptitle("Drake equation factors by Metaculus", fontsize = 14)
-
-#----------------------
-# PLOTS
-print("Making the plots...")
-
+#------------------------------------------------------------------------------
 # Rs
 plot(ax = ax1, 
      df_f = df_Rs_pdf,
      color = "blue",
      label = "Plot f1",
-     xlabel = "Average SFR of suitable stars [stars/year]",
-     title = "$R_{*}$")
+     xlabel = "$R_{*}$ [stars/year]",
+     title = "Average SFR of suitable stars in our Galaxy")
 # fp
 plot(ax = ax2,
      df_f = df_fp_pdf,
      color = "blue",
      label = "Plot f2", 
-     xlabel = "Fraction of stars that form planets",
-     title = "$f_{p}$")
+     xlabel = "$f_{p}$",
+     title = "Fraction of stars that have planets")
 # ne
 plot(ax = ax3, 
      df_f = df_ne_pdf,
      color = "blue",
      label = "Plot f3",
-     xlabel = "Average number of habitable planets per star", 
-          title = "$n_{e}$")
+     xlabel = "$n_{e}$", 
+     title = "Average number of habitable planets per star")
 # fl
 plot(ax = ax4, 
      df_f = df_fl_pdf,
      color = "blue",
      label = "Plot f4", 
-     xlabel = "Fraction of habitable planets in which life emerges", 
-     title = "$f_{l}$")
+     xlabel = "$f_{l}$", 
+     title = "Fraction of habitable planets \nthat develops life")
 # fi
 plot(ax = ax5, 
      df_f = df_fi_pdf,
      color = "blue",
      label = "Plot f5", 
-     xlabel = "Fraction of habitable planets where intelligence life emerges", 
-     title = "$f_{i}$")
+     xlabel = "$f_{i}$", 
+     title = "Fraction of habitable planets that \ndevelops intelligent life (civilizations)")
 # fc
 plot(ax = ax6, 
      df_f = df_fc_pdf,
      color = "blue",
      label = "Plot f6", 
-     xlabel = "Fraction of planets where life is capable of interstellar communication", 
-     title = "$f_{c}$")
+     xlabel = "$f_{c}$", 
+     title = "Fraction of civilizations that \nreleases detectable signs")
 # L
 plot(ax = ax7, 
      df_f = df_L_pdf,
      color = "blue",
      label = "Plot f7", 
-     xlabel = "Years a civilization remains detectable", 
-     title = "$L$")
+     xlabel = "$L$ [Years]", 
+     title = "Years a civilization releases detectable signs")
+#------------------------------------------------------------------------------
+# N PDF
+print('Making the "smooth plot"...')
 
-#----------------------
-# N smooth
-# Normalizing histogram counts
-log_bin_edges = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 101)
+# Estimating the PDF in log space, because it is not working in linear
+log_data = np.log10(N_cdf)
+N_density = gaussian_kde(log_data)
+x = np.linspace(min(log_data), max(log_data), 100)
 
-counts, _ = np.histogram(N_cdf, bins = log_bin_edges) # counts, bins
+# This integral should be ~ 1
+print("This integral should be ~1 \nIntegral =", simps(N_density(x), x))
 
-log_bin_widths = np.diff(log_bin_edges)
-total_observations = counts.sum()
-density = counts / total_observations
-
-# Interpolating on the data from the histogram
-log_bin_midpoints = (log_bin_edges[:-1] + log_bin_edges[1:]) / 2
-bin_midpoints = np.log10(log_bin_midpoints)
-interpolation = inter.UnivariateSpline(bin_midpoints, density, s = 5*10**-7)
-
-# Data for the smooth curve
-bin_edges = np.log10(log_bin_edges[1:])
-N_PDF = interpolation(bin_edges)
-
-#-----------
-ax8.plot(log_bin_midpoints, N_PDF, 
+#---------------------------------------
+ax8.plot(x, N_density(x), 
          color = "red", 
          linewidth = 2, 
          label = "Plot N")
 
 # Design
-ax8.set_xlabel("Number of civilizations in our Galaxy", fontsize = 8)
+ax8.set_xlabel("log($N$)", fontsize = 10)
 ax8.set_ylabel("Probability", fontsize = 10)
-ax8.set_title("$N$, number of civilizations in our galaxy", fontsize = 12, pad = 10)
+ax8.set_title("Number of civilizations in our galaxy", fontsize = 10, pad = 10)
 #ax8.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
-ax8.set_xscale("log")
-
+#ax8.set_xscale("log")
 ax8.minorticks_on()
 ax8.tick_params(which = "major", direction = "inout", length = 7)
 ax8.tick_params(which = "minor", direction = "in", length = 2)
 ax8.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
 ax8.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-ax8.fill_between(log_bin_midpoints, N_PDF, color = "red", alpha = 0.1)
+ax8.fill_between(x, N_density(x), color = "red", alpha = 0.1)
 
-#----------------------
+#------------------------------------------------------------------------------
 # N CDF
-logbins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 1000)
+print('Making the CDF...')
+
+log_space_bins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 100)
 
 ax9.ecdf(N_cdf, 
          color = "red", 
@@ -425,9 +439,9 @@ ax9.ecdf(N_cdf,
          label = "Plot N ecdf")
 
 # Design
-ax9.set_xlabel("Number of civilizations in our Galaxy", fontsize = 8)
-ax9.set_ylabel("Cumulative probability", fontsize = 10)
-ax9.set_title("CDF of $N$", fontsize = 12, pad = 10)
+ax9.set_xlabel("$N$", fontsize = 12)
+ax9.set_ylabel("Cumulative probability", fontsize = 8)
+ax9.set_title("CDF of the number of civilizations in our Galaxy", fontsize = 10, pad = 10)
 #ax9.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
@@ -439,16 +453,19 @@ ax9.tick_params(which = "minor", direction = "in", length = 2)
 ax9.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-ax9.fill_between(logbins, ecdft(logbins), color = "red", alpha = 0.1)
+ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
-#----------------------
+#------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDFs.png", bbox_inches = "tight")
 
-#-------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Figure double
+print("Making the double plot...")
+
 # Creating a figure object with size 6x8 inches and 2 subfigs
 fig3, axes = plt.subplots(nrows = 2,
                           ncols = 1,
@@ -457,19 +474,37 @@ fig3, axes = plt.subplots(nrows = 2,
 # axes is a 1D numpy array of AxesSubplot objects
 ax1, ax2 = axes[0], axes[1]
 
-logbins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 1000)
-#----------------------
-# N smooth
-ax1.plot(log_bin_midpoints, N_PDF, 
+#------------------------------------------------------------------------------
+# N frequency in a smooth curve
+log_space_bins_edges = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 1001)
+
+counts, _ = np.histogram(N_cdf, bins = log_space_bins_edges) # counts, bins
+
+log_bin_widths = np.diff(log_space_bins_edges)
+total_observations = counts.sum()
+N_density = counts / total_observations
+
+# Interpolating on the data from the histogram
+# Using the middle of the bins, not the edges
+log_space_bins_midpoints = (log_space_bins_edges[:-1] + log_space_bins_edges[1:]) / 2
+log_of_bins_midpoints = np.log10(log_space_bins_midpoints)
+interpolation = inter.UnivariateSpline(log_of_bins_midpoints, N_density, s = 1./(quantity))
+
+# Data for the smooth curve
+bin_edges = np.log10(log_space_bins_edges[1:])
+N_interpolated = interpolation(bin_edges)
+
+#---------------------------------------
+ax1.plot(log_space_bins_edges[1:], N_interpolated, 
          color = "red", 
          linewidth = 2, 
          label = "Plot N",
          zorder = 5)
 
 # Design
-ax1.set_xlabel("Number of civilizations in our Galaxy", fontsize = 10)
-ax1.set_ylabel("Probability", fontsize = 10)
-ax1.set_title("$N$, number of civilizations in our galaxy", fontsize = 12, pad = 10)
+ax1.set_xlabel("$N$", fontsize = 12)
+ax1.set_ylabel("Frequency of $N$", fontsize = 10)
+ax1.set_title("Number of civilizations in our galaxy", fontsize = 12, pad = 10)
 #ax1.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
@@ -482,11 +517,12 @@ ax1.tick_params(which = "both", bottom = True, top = True, left = True, right = 
 ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
 # Color filling
-ax1.fill_between(log_bin_midpoints, N_PDF, color = "red", alpha = 0.1)
+ax1.fill_between(log_space_bins_midpoints, N_interpolated, color = "red", alpha = 0.1)
 
-#---------
+#---------------------------------------
 # Alone in the Galaxy marker filling
 points = np.logspace(np.log10(min(N_cdf)), np.log10(1), 1000)
+
 ax1.fill_between(points, 
                  interpolation(np.log10(points)), 
                  hatch = '\\\\', 
@@ -507,11 +543,13 @@ ax1.vlines(x = 1,
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
 text = "Probability to be alone \nin the Milky Way galaxy \n($N = 1$): " + formatted_probability
-ax1.text(10**-32, 0.025, text, fontsize = 10)
-ax1.text(10**-8, 0.009, f'{probability_alone_MW:.0f}%', fontsize = 12)
-#---------
+ax1.text(10**-32, 0.0025, text, fontsize = 10)
+ax1.text(10**-8, 0.0008, f'{probability_alone_MW:.0f}%', fontsize = 12)
+
+#---------------------------------------
 # Alone in the observable Universe marker filling
 points = np.logspace(np.log10(min(N_cdf)), np.log10(5*10**-13), 1000)
+
 ax1.fill_between(points, 
                  interpolation(np.log10(points)), 
                  hatch = '//', 
@@ -532,11 +570,13 @@ ax1.vlines(x = 5*10**-13,
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability to be alone \nin the observable Universe \n($N = 5 \\times 10^{{-13}}$): " + formatted_probability
-ax1.text(10**-50, 0.004, text, fontsize = 10)
-ax1.text(10**-20, 0.0025, f'{probability_alone_OU:.0f}%', fontsize = 12)
+ax1.text(10**-50, 0.0005, text, fontsize = 10)
+ax1.text(10**-20, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12)
 
-#----------------------
+#------------------------------------------------------------------------------
 # N CDF
+log_space_bins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 1000)
+
 ax2.ecdf(N_cdf, 
          color = "red", 
          linewidth = 2,
@@ -544,9 +584,9 @@ ax2.ecdf(N_cdf,
          zorder = 5)
 
 # Design
-ax2.set_xlabel("Number of civilizations in our Galaxy", fontsize = 10)
+ax2.set_xlabel("$N$", fontsize = 12)
 ax2.set_ylabel("Cumulative probability", fontsize = 10)
-ax2.set_title("CDF of $N$", fontsize = 12, pad = 10)
+ax2.set_title("CDF of the number of civilizations in our Galaxy", fontsize = 12, pad = 10)
 #ax2.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
@@ -559,18 +599,10 @@ ax2.tick_params(which = "both", bottom = True, top = True, left = True, right = 
 ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
 # Color filling
-#ecdft = ECDF(N_cdf)
-ax2.fill_between(logbins, ecdft(logbins), color = "red", alpha = 0.1)
+ax2.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
-#---------
+#---------------------------------------
 # Alone in the Galaxy marker filling
-"""ax2.fill_between(logbins, 
-                 ecdft(logbins), 
-                 hatch = '\\\\', 
-                 edgecolor = (0,0,0,0.3), 
-                 fc = (0,1,0,0.1), 
-                 linewidth = 0.0, 
-                 zorder = 1)"""
 ax2.vlines(x = 1, 
            color = "green", 
            ymin = 0, 
@@ -586,15 +618,8 @@ formatted_probability = f"{probability_alone_MW:.0f}%"
 text = "Probability to be alone \nin the Milky Way galaxy: \n($N = 1$): " + formatted_probability
 ax2.text(10**-27, 0.7, text, fontsize = 10)
 
-#---------
+#---------------------------------------
 # Alone in the observable Universe marker filling
-"""ax2.fill_between(logbins, 
-                 ecdft(logbins), 
-                 hatch = '//', 
-                 edgecolor = (0,0,0,0.3), 
-                 fc = (0,1,0,0.1), 
-                 linewidth = 0.0, 
-                 zorder = 2)"""
 ax2.vlines(x = 5*10**-13, 
            color = "red", 
            ymin = 0, 
@@ -610,13 +635,14 @@ formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability to be alone \nin the observable Universe: \n($N = 5 \\times 10^{{-13}}$): " + formatted_probability
 ax2.text(10**-42, 0.15, text, fontsize = 10)
 
-#----------------------
+#------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDF and CDF.png", bbox_inches = "tight")
 
-#-------------------------------------------
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 print("All done!")
 
 #-------------------------------------------

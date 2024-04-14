@@ -10,6 +10,8 @@ from statsmodels.distributions.empirical_distribution import ECDF
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
+print("Hello. Starting!")
+
 # urls of the csv data from the API
 url_Rs = "https://www.metaculus.com/api2/questions/1337/download_csv/"
 url_fp = "https://www.metaculus.com/api2/questions/1338/download_csv/"
@@ -79,37 +81,37 @@ def cdf_setter(url, xmin, xmax, q = 1000):
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Running the function
-print("Reading and reducing the data...")
+print("Reading and reducing data...")
 
 quantity = 10**6 # quantity of data in the simulation
 
 df_Rs_cdf, df_Rs_pdf = cdf_setter(url = url_Rs, xmin = 0.01, xmax = 1000, q = quantity)
-print("Rs done!")
+print("Rs done.")
 df_fp_cdf, df_fp_pdf = cdf_setter(url = url_fp, xmin = 0.01, xmax = 1, q = quantity)
-print("fp done!")
+print("fp done.")
 df_ne_cdf, df_ne_pdf = cdf_setter(url = url_ne, xmin = 10**-6, xmax = 100, q = quantity)
-print("ne done!")
+print("ne done.")
 df_fl_cdf, df_fl_pdf = cdf_setter(url = url_fl, xmin = 10**-31, xmax = 1, q = quantity)
-print("fl done!")
+print("fl done.")
 df_fi_cdf, df_fi_pdf = cdf_setter(url = url_fi, xmin = 10**-20, xmax = 1, q = quantity)
-print("fi done!")
+print("fi done.")
 df_fc_cdf, df_fc_pdf = cdf_setter(url = url_fc, xmin = 10**-5, xmax = 1, q = quantity)
-print("fc done!")
+print("fc done.")
 df_L_cdf, df_L_pdf = cdf_setter(url = url_L, xmin = 10, xmax = 10**10, q = quantity)
-print("L done!")
+print("L done.")
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
-# Multiplying the factors
+# Multiplying the factors to find the N's
 print("Multiplying the factors...")
 
-N_cdf = (df_Rs_cdf["x_log"] * 
-         df_fp_cdf["x_log"] * 
-         df_ne_cdf["x_log"] * 
-         df_fl_cdf["x_log"] * 
-         df_fi_cdf["x_log"] * 
-         df_fc_cdf["x_log"] * 
-         df_L_cdf["x_log"])
+Ns = (df_Rs_cdf["x_log"] * 
+      df_fp_cdf["x_log"] * 
+      df_ne_cdf["x_log"] * 
+      df_fl_cdf["x_log"] * 
+      df_fi_cdf["x_log"] * 
+      df_fc_cdf["x_log"] * 
+      df_L_cdf["x_log"])
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -252,7 +254,7 @@ histogram(ax = ax7,
           nbins = nbins)
 # N
 histogram(ax = ax8, 
-          df_f = N_cdf,
+          df_f = Ns,
           color = (1.0, 0.0, 0.0, 0.1),
           edgecolor = "red",
           label = "Histo N", 
@@ -263,10 +265,10 @@ histogram(ax = ax8,
 
 #------------------------------------------------------------------------------
 # N cumulative fraction
-log_space_bins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), nbins)
-weights = np.zeros_like(N_cdf) + 1./quantity
+log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), nbins)
+weights = np.zeros_like(Ns) + 1./quantity
 
-ax9.hist(N_cdf, 
+ax9.hist(Ns, 
          bins = log_space_bins, 
          histtype = "step",
          fill = True,
@@ -292,7 +294,7 @@ ax9.tick_params(which = "minor", direction = "in", length = 2)
 ax9.tick_params(which = "both", bottom = True, top = True, left = True, right = True)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 
-ecdft = ECDF(N_cdf)
+ecdft = ECDF(Ns)
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
                  
 #------------------------------------------------------------------------------
@@ -398,12 +400,12 @@ plot(ax = ax7,
 print('Making the "smooth plot"...')
 
 # Estimating the PDF in log space, because it is not working in linear
-log_data = np.log10(N_cdf)
+log_data = np.log10(Ns)
 N_density = gaussian_kde(log_data)
 x = np.linspace(min(log_data), max(log_data), 100)
 
 # This integral should be ~ 1
-print("This integral should be ~1 \nIntegral =", simps(N_density(x), x))
+print("The next integral should be ~1 \nIntegral =", simps(N_density(x), x))
 
 #---------------------------------------
 ax8.plot(x, N_density(x), 
@@ -414,7 +416,7 @@ ax8.plot(x, N_density(x),
 # Design
 ax8.set_xlabel("log($N$)", fontsize = 10)
 ax8.set_ylabel("Probability", fontsize = 10)
-ax8.set_title("Number of civilizations in our galaxy", fontsize = 10, pad = 10)
+ax8.set_title("Number of civilizations in our Galaxy", fontsize = 10, pad = 10)
 #ax8.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
@@ -431,9 +433,9 @@ ax8.fill_between(x, N_density(x), color = "red", alpha = 0.1)
 # N CDF
 print('Making the CDF...')
 
-log_space_bins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 100)
+log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 100)
 
-ax9.ecdf(N_cdf, 
+ax9.ecdf(Ns, 
          color = "red", 
          linewidth = 2,
          label = "Plot N ecdf")
@@ -476,9 +478,9 @@ ax1, ax2 = axes[0], axes[1]
 
 #------------------------------------------------------------------------------
 # N frequency in a smooth curve
-log_space_bins_edges = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 1001)
+log_space_bins_edges = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 1001)
 
-counts, _ = np.histogram(N_cdf, bins = log_space_bins_edges) # counts, bins
+counts, _ = np.histogram(Ns, bins = log_space_bins_edges) # counts, bins
 
 log_bin_widths = np.diff(log_space_bins_edges)
 total_observations = counts.sum()
@@ -504,7 +506,7 @@ ax1.plot(log_space_bins_edges[1:], N_interpolated,
 # Design
 ax1.set_xlabel("$N$", fontsize = 12)
 ax1.set_ylabel("Frequency of $N$", fontsize = 10)
-ax1.set_title("Number of civilizations in our galaxy", fontsize = 12, pad = 10)
+ax1.set_title("Number of civilizations in our Galaxy", fontsize = 12, pad = 10)
 #ax1.grid(True, linestyle = ":", linewidth = "1")
 
 # Axes
@@ -520,8 +522,28 @@ ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelrig
 ax1.fill_between(log_space_bins_midpoints, N_interpolated, color = "red", alpha = 0.1)
 
 #---------------------------------------
-# Alone in the Galaxy marker filling
-points = np.logspace(np.log10(min(N_cdf)), np.log10(1), 1000)
+# Not alone in the Galaxy hatch filling
+points = np.logspace(np.log10(1), np.log10(max(Ns)), 1000)
+
+ax1.fill_between(points, 
+                 interpolation(np.log10(points)), 
+                 hatch = '||', 
+                 edgecolor = (0,0,0,0.3), 
+                 fc = (0,1,0,0.0), 
+                 linewidth = 0.0,
+                 zorder = 1)
+
+# Adding text with info of probability of being alone in the galaxy
+# {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
+probability_not_alone_MW = (ecdft(10**12) - ecdft(1))*100
+formatted_probability = f"{probability_not_alone_MW:.0f}%"
+text = "Probability of\n NOT being\n  alone in the\n   Milky Way\n    galaxy\n    ($N > 1$): " + formatted_probability
+ax1.text(9*10**1, 0.0033, text, fontsize = 8)
+ax1.text(10**1, 0.00025, f'{probability_not_alone_MW:.0f}%', fontsize = 12)
+
+#---------------------------------------
+# Alone in the Galaxy hatch filling and line
+points = np.logspace(np.log10(min(Ns)), np.log10(1), 1000)
 
 ax1.fill_between(points, 
                  interpolation(np.log10(points)), 
@@ -542,17 +564,17 @@ ax1.vlines(x = 1,
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
-text = "Probability to be alone \nin the Milky Way galaxy \n($N = 1$): " + formatted_probability
-ax1.text(10**-32, 0.0025, text, fontsize = 10)
+text = "Probability of being alone \nin the Milky Way galaxy \n($N < 1$): " + formatted_probability
+ax1.text(10**-29, 0.0025, text, fontsize = 8)
 ax1.text(10**-8, 0.0008, f'{probability_alone_MW:.0f}%', fontsize = 12)
 
 #---------------------------------------
-# Alone in the observable Universe marker filling
-points = np.logspace(np.log10(min(N_cdf)), np.log10(5*10**-13), 1000)
+# Alone in the observable Universe hatch filling and line
+points = np.logspace(np.log10(min(Ns)), np.log10(5*10**-13), 1000)
 
 ax1.fill_between(points, 
                  interpolation(np.log10(points)), 
-                 hatch = '//', 
+                 hatch = '/', 
                  edgecolor = (0,0,0,0.3), 
                  fc = (0,1,0,0.1), 
                  linewidth = 0.0,
@@ -569,15 +591,15 @@ ax1.vlines(x = 5*10**-13,
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
-text = "Probability to be alone \nin the observable Universe \n($N = 5 \\times 10^{{-13}}$): " + formatted_probability
-ax1.text(10**-50, 0.0005, text, fontsize = 10)
+text = "Probability of being alone \nin the observable Universe \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
+ax1.text(10**-47, 0.0005, text, fontsize = 8)
 ax1.text(10**-20, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12)
 
 #------------------------------------------------------------------------------
 # N CDF
-log_space_bins = np.logspace(np.log10(min(N_cdf)), np.log10(max(N_cdf)), 1000)
+log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 1000)
 
-ax2.ecdf(N_cdf, 
+ax2.ecdf(Ns, 
          color = "red", 
          linewidth = 2,
          label = "Plot N ecdf", 
@@ -602,7 +624,7 @@ ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelrig
 ax2.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
 #---------------------------------------
-# Alone in the Galaxy marker filling
+# Alone in the Galaxy line
 ax2.vlines(x = 1, 
            color = "green", 
            ymin = 0, 
@@ -615,11 +637,11 @@ ax2.vlines(x = 1,
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
-text = "Probability to be alone \nin the Milky Way galaxy: \n($N = 1$): " + formatted_probability
-ax2.text(10**-27, 0.7, text, fontsize = 10)
+text = "Probability of being alone \nin the Milky Way galaxy: \n($N < 1$): " + formatted_probability
+ax2.text(5*10**-23, 0.7, text, fontsize = 8)
 
 #---------------------------------------
-# Alone in the observable Universe marker filling
+# Alone in the observable Universe line
 ax2.vlines(x = 5*10**-13, 
            color = "red", 
            ymin = 0, 
@@ -632,8 +654,8 @@ ax2.vlines(x = 5*10**-13,
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
-text = "Probability to be alone \nin the observable Universe: \n($N = 5 \\times 10^{{-13}}$): " + formatted_probability
-ax2.text(10**-42, 0.15, text, fontsize = 10)
+text = "Probability of being alone \nin the observable Universe: \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
+ax2.text(10**-38, 0.15, text, fontsize = 8)
 
 #------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings

@@ -5,7 +5,6 @@ from scipy import interpolate as inter
 from scipy.interpolate import CubicSpline
 from scipy.stats import gaussian_kde
 import matplotlib.pyplot as plt
-from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 from statsmodels.distributions.empirical_distribution import ECDF
 
 #------------------------------------------------------------------------------

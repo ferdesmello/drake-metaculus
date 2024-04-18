@@ -2,7 +2,7 @@
 
 This code calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions, not point estimates. This is done using prediction data from the [Metaculus](https://www.metaculus.com/home/) website.
 
-## The Drake equation:
+## The Drake equation
 
 $N = R_{*}\cdot f_{p}\cdot n_{e}\cdot f_{l}\cdot f_{i}\cdot f_{c}\cdot L$
 

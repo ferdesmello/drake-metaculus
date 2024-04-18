@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from scipy.integrate import simps
 from scipy import interpolate as inter
-from scipy.interpolate import CubicSpline
 from scipy.stats import gaussian_kde
-import matplotlib.pyplot as plt
 from statsmodels.distributions.empirical_distribution import ECDF
 
 #------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ url_L  = "https://www.metaculus.com/api2/questions/1343/download_csv/"
 # function to read, format, reduce, and transform the data
 def cdf_setter(url, xmin, xmax, q = 1000):
 
-     # dataframe for use later
+     # dataframe for later use
      cdf_f = pd.DataFrame()
 
      # reading data
@@ -45,15 +44,15 @@ def cdf_setter(url, xmin, xmax, q = 1000):
      df_cdf["x_norm"] = pd.to_numeric(df_cdf["x_norm"], errors = 'coerce')
      df_cdf["CDF"] = df_cdf["CDF"].astype("float")
 
-     # Step 1: Adjust the CDF to start at 0
+     # Adjusting the CDF to start at 0
      df_cdf['CDF'] -= df_cdf['CDF'].min()
-     # Step 2: Normalize the CDF to end at 1
+     # Normalizing the CDF to end at 1
      df_cdf['CDF'] /= df_cdf['CDF'].max()
 
-     # random number generator
+     # Random number generator
      uniform_samples = np.random.uniform(0, 1, q)
 
-     # transforming x range from 0-1 to the real xmin-xmax
+     # Transforming x range from 0-1 to the real xmin-xmax
      xmin_log = np.log10(xmin)
      xmax_log = np.log10(xmax)
      df_cdf["x_log"] = pd.DataFrame(df_cdf["x_norm"]).apply(lambda x : (xmin_log + x * (xmax_log - xmin_log)))
@@ -65,13 +64,13 @@ def cdf_setter(url, xmin, xmax, q = 1000):
      df_pdf['PDF'] = df_pdf["PDF"] / total_area
      #df_pdf['PDF'] = df_pdf["PDF"] / df_pdf["PDF"].sum()
      
-     # inverse interpolation
-     inverse_cdf = CubicSpline(df_cdf["CDF"], df_cdf["x_log"])
+     # Inverse interpolation
+     inverse_cdf = inter.CubicSpline(df_cdf["CDF"], df_cdf["x_log"])
 
-     # sampling
+     # Sampling
      sampled_normalized = inverse_cdf(uniform_samples)
 
-     # filling cdf dataframe to be returned
+     # Filling cdf_f dataframe to be returned
      cdf_f["x_log"] = pd.DataFrame(sampled_normalized).apply(lambda x : 10**x )
      cdf_f["cdf_values"] = pd.DataFrame(uniform_samples)
 
@@ -119,14 +118,14 @@ Ns = (df_Rs_cdf["x_log"] *
 # HISTOGRAMS
 print("Making the histograms...")
 
-# number of bins for the histograms
+# Number of bins for the histograms
 nbins = 1000
 #---------------------------------------
 # Function to make the histograms sub figures
 def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
 
      log_space_bins = np.logspace(np.log10(min(df_f)), np.log10(max(df_f)), nbins)
-     # I am just using the frequency per bin, it is not a normalization.
+     # I am just using the frequency per bin, it is not a normalization
      weights = np.zeros_like(df_f) + 1./q
 
      ax.hist(df_f,
@@ -160,13 +159,13 @@ fig1, axes = plt.subplots(nrows = 3,
                           ncols = 3,
                           figsize = (14, 8))
 
-# axes is a 2D numpy array of AxesSubplot objects
+# Axes is a 2D numpy array of AxesSubplot objects
 ax1, ax2, ax3 = axes[0, 0], axes[0, 1], axes[0, 2]
 ax4, ax5, ax6 = axes[1, 0], axes[1, 1], axes[1, 2]
 ax7, ax8, ax9 = axes[2, 0], axes[2, 1], axes[2, 2]
 
 #---------------------------------------
-# All this just to print a number preaty in the figure
+# All this just to print a number pretty in the figure
 # Converting number of simulations to float
 number = float(quantity)
 # Converting to scientific notation string to ensure exponent extraction
@@ -177,8 +176,7 @@ power = sci_notation.split('0')[1]
 LaTeX = f"$10^{{{power}}}$"
 # All the text for the subtitle
 text = "Frequencies given by Metaculus' CDFs, n = " + LaTeX
-#print(text)
-# Aigure subtitle
+# A figure subtitle
 fig1.suptitle(text, fontsize = 14)
 #------------------------------------------------------------------------------
 # Rs
@@ -338,7 +336,7 @@ fig2, axes = plt.subplots(nrows = 3,
                           ncols = 3,
                           figsize = (14, 8))
 
-# axes is a 2D numpy array of AxesSubplot objects
+# Axes is a 2D numpy array of AxesSubplot objects
 ax1, ax2, ax3 = axes[0, 0], axes[0, 1], axes[0, 2]
 ax4, ax5, ax6 = axes[1, 0], axes[1, 1], axes[1, 2]
 ax7, ax8, ax9 = axes[2, 0], axes[2, 1], axes[2, 2]
@@ -398,12 +396,12 @@ plot(ax = ax7,
 # N PDF
 print('Making the "smooth plot"...')
 
-# Estimating the PDF in log space, because it is not working in linear
+# Estimating the PDF in log space, because it is not working well in linear
 log_data = np.log10(Ns)
 N_density = gaussian_kde(log_data)
 x = np.linspace(min(log_data), max(log_data), 100)
 
-# This integral should be ~ 1
+# This integral should be ~1
 print("The next integral should be ~1 \nIntegral =", simps(N_density(x), x))
 
 #---------------------------------------
@@ -464,7 +462,7 @@ plt.savefig("Drake by Metaculus PDFs.png", bbox_inches = "tight")
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
-# Figure double
+# Double plot figure
 print("Making the double plot...")
 
 # Creating a figure object with size 6x8 inches and 2 subfigs
@@ -472,7 +470,7 @@ fig3, axes = plt.subplots(nrows = 2,
                           ncols = 1,
                           figsize = (6, 8))
 
-# axes is a 1D numpy array of AxesSubplot objects
+# Axes is a 1D numpy array of AxesSubplot objects
 ax1, ax2 = axes[0], axes[1]
 
 #------------------------------------------------------------------------------
@@ -491,7 +489,7 @@ log_space_bins_midpoints = (log_space_bins_edges[:-1] + log_space_bins_edges[1:]
 log_of_bins_midpoints = np.log10(log_space_bins_midpoints)
 interpolation = inter.UnivariateSpline(log_of_bins_midpoints, N_density, s = 1./(quantity))
 
-# Data for the smooth curve
+# X and Y data for the smooth curve
 bin_edges = np.log10(log_space_bins_edges[1:])
 N_interpolated = interpolation(bin_edges)
 

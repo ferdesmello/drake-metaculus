@@ -1,6 +1,6 @@
 # Drake-Metaculus
 
-This code calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions, not point estimates. This is done using prediction data from the [Metaculus](https://www.metaculus.com/home/) website.
+This folder contains code that calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions (not point estimates) for the factors, obtaining a distribution (not a point estimate) of the possible number of detectable alien civilizations in our Galaxy. This is done using prediction data from the [Metaculus](https://www.metaculus.com/home/) website.
 
 ## The Drake equation
 
@@ -32,7 +32,7 @@ The Drake equation is usually computed using point estimates for every factor. H
 
 Run the .py file (it uses many common libraries). It will download API data from Metaculus's questions about the 7 factors of the Drake equation. The most recent prediction data - the PDFs and CDFs for every factor - will be parsed and used to calculate $N$, the the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
 
-## The questions
+## The questions on Metaculus
 
 See the links below:
 

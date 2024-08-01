@@ -51,3 +51,7 @@ See the links below:
 [6th parameter f_c](https://www.metaculus.com/questions/1342/drakes-equation-6th-parameter-f_c/)
 
 [7th parameter L](https://www.metaculus.com/questions/1343/drakes-equation-7th-parameter-l/)
+
+## The Image End Result
+
+![alt text](Drake by Metaculus PDF and CDF.png "Title")

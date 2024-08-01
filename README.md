@@ -55,3 +55,4 @@ See the links below:
 ## The Image End Result
 
 ![alt text](Drake by Metaculus PDF and CDF.png "Title")
+<img src="Drake by Metaculus PDF and CDF.png" alt="MarineGEO circle logo" style="height: 789px; width:589px;"/>

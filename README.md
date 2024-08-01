@@ -1,6 +1,6 @@
 # Drake-Metaculus
 
-This code calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions, not point estimates. This is done using prediction data from the [Metaculus](https://www.metaculus.com/home/) website.
+This folder contains code that calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions (not point estimates) for the factors, obtaining a distribution for the number of alien civilizations in our Galaxy. This is done using prediction data from the [Metaculus](https://www.metaculus.com/home/) website.
 
 ## The Drake equation
 

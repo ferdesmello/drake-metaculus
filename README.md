@@ -52,7 +52,5 @@ See the links below:
 
 [7th parameter L](https://www.metaculus.com/questions/1343/drakes-equation-7th-parameter-l/)
 
-## The Image End Result
-
-![alt text](Drake by Metaculus PDF and CDF.png "Title")
-<img src="Drake by Metaculus PDF and CDF.png" alt="MarineGEO circle logo" style="height: 789px; width:589px;"/>
+## The End Estimates
+<img src="Drake by Metaculus PDF and CDF.png" alt="Distribution of the estimates of the possible number of detectable alien civilizations in our Galaxy by Metaculus." style="height: 789px; width:589px;"/>

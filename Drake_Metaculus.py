@@ -160,14 +160,14 @@ def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
      ax.set_xscale("log")
 
      ax.minorticks_on()
-     ax.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+     ax.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
      ax.tick_params(which = "minor", direction = "in", length = 0)
      ax.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
      ax.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
      ax.spines['right'].set_visible(False)
      ax.spines['top'].set_visible(False)
-     ax.spines['left'].set_color('dimgray')
-     ax.spines['bottom'].set_color('dimgray')
+     ax.spines['left'].set_color(custom_dark_gray)
+     ax.spines['bottom'].set_color(custom_dark_gray)
 
 #--------------------------------------------------------------------------------------------
 # Creating a figure object with size 14x8 inches and 9 subfigs
@@ -302,14 +302,14 @@ ax9.set_title("CDF of the number of civilizations in our Galaxy", fontsize = 10,
 ax9.set_xscale("log")
 
 ax9.minorticks_on()
-ax9.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+ax9.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
 ax9.tick_params(which = "minor", direction = "in", length = 0)
 ax9.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 ax9.spines['right'].set_visible(False)
 ax9.spines['top'].set_visible(False)
-ax9.spines['left'].set_color('dimgray')
-ax9.spines['bottom'].set_color('dimgray')
+ax9.spines['left'].set_color(custom_dark_gray)
+ax9.spines['bottom'].set_color(custom_dark_gray)
 
 ecdft = ECDF(Ns)
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
@@ -343,14 +343,14 @@ def plot(ax, df_f, color, label, xlabel, title):
      ax.set_xscale("log")
 
      ax.minorticks_on()
-     ax.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+     ax.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
      ax.tick_params(which = "minor", direction = "in", length = 0)
      ax.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
      ax.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
      ax.spines['right'].set_visible(False)
      ax.spines['top'].set_visible(False)
-     ax.spines['left'].set_color('dimgray')
-     ax.spines['bottom'].set_color('dimgray')
+     ax.spines['left'].set_color(custom_dark_gray)
+     ax.spines['bottom'].set_color(custom_dark_gray)
 
      ax.fill_between(df_f['x_log'], df_f['PDF'], color = "blue", alpha = 0.1)
 #-------------------------------------------------------------------------------------------
@@ -442,14 +442,14 @@ ax8.set_title("Number of civilizations in our Galaxy", fontsize = 10, pad = 10, 
 # Axes
 #ax8.set_xscale("log")
 ax8.minorticks_on()
-ax8.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+ax8.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
 ax8.tick_params(which = "minor", direction = "in", length = 0)
 ax8.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
 ax8.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 ax8.spines['right'].set_visible(False)
 ax8.spines['top'].set_visible(False)
-ax8.spines['left'].set_color('dimgray')
-ax8.spines['bottom'].set_color('dimgray')
+ax8.spines['left'].set_color(custom_dark_gray)
+ax8.spines['bottom'].set_color(custom_dark_gray)
 
 ax8.fill_between(x, N_density(x), color = "red", alpha = 0.1)
 
@@ -474,14 +474,14 @@ ax9.set_title("CDF of the number of civilizations in our Galaxy", fontsize = 10,
 ax9.set_xscale("log")
 
 ax9.minorticks_on()
-ax9.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+ax9.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
 ax9.tick_params(which = "minor", direction = "in", length = 0)
 ax9.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
 ax9.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 ax9.spines['right'].set_visible(False)
 ax9.spines['top'].set_visible(False)
-ax9.spines['left'].set_color('dimgray')
-ax9.spines['bottom'].set_color('dimgray')
+ax9.spines['left'].set_color(custom_dark_gray)
+ax9.spines['bottom'].set_color(custom_dark_gray)
 
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
@@ -541,14 +541,14 @@ ax1.set_title("Number of civilizations in our Galaxy", fontsize = 12, pad = 10, 
 ax1.set_xscale("log")
 
 ax1.minorticks_on()
-ax1.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+ax1.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
 ax1.tick_params(which = "minor", direction = "in", length = 0)
 ax1.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
 ax1.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 ax1.spines['right'].set_visible(False)
 ax1.spines['top'].set_visible(False)
-ax1.spines['left'].set_color('dimgray')
-ax1.spines['bottom'].set_color('dimgray')
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
 
 # Color filling
 ax1.fill_between(log_space_bins_midpoints, N_interpolated, color = "red", alpha = 0.1)
@@ -571,7 +571,7 @@ probability_not_alone_MW = (ecdft(10**12) - ecdft(1))*100
 formatted_probability = f"{probability_not_alone_MW:.0f}%"
 text = "Probability of\n NOT being\n  alone in the\n   Milky Way\n    galaxy\n    ($N > 1$): " + formatted_probability
 ax1.text(9*10**1, 0.0033, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**1, 0.00025, f'{probability_not_alone_MW:.0f}%', fontsize = 12)
+ax1.text(10**1, 0.00025, f'{probability_not_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #---------------------------------------
 # Alone in the Galaxy hatch filling and line
@@ -598,7 +598,7 @@ probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
 text = "Probability of being alone \nin the Milky Way galaxy \n($N < 1$): " + formatted_probability
 ax1.text(10**-29, 0.0025, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**-8, 0.0008, f'{probability_alone_MW:.0f}%', fontsize = 12)
+ax1.text(10**-8, 0.0008, f'{probability_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #---------------------------------------
 # Alone in the observable Universe hatch filling and line
@@ -625,7 +625,7 @@ probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability of being alone \nin the observable Universe \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
 ax1.text(10**-47, 0.0005, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**-20, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12)
+ax1.text(10**-20, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #-------------------------------------------------------------------------------------------
 # N CDF
@@ -647,14 +647,14 @@ ax2.set_title("CDF of the number of civilizations in our Galaxy", fontsize = 12,
 ax2.set_xscale("log")
 
 ax2.minorticks_on()
-ax2.tick_params(which = "major", direction = "out", length = 4, colors = 'dimgray')
+ax2.tick_params(which = "major", direction = "out", length = 4, color = custom_dark_gray)
 ax2.tick_params(which = "minor", direction = "in", length = 0)
 ax2.tick_params(which = "both", bottom = True, top = False, left = True, right = False)
 ax2.tick_params(labelbottom = True, labeltop = False, labelleft = True, labelright = False)
 ax2.spines['right'].set_visible(False)
 ax2.spines['top'].set_visible(False)
-ax2.spines['left'].set_color('dimgray')
-ax2.spines['bottom'].set_color('dimgray')
+ax2.spines['left'].set_color(custom_dark_gray)
+ax2.spines['bottom'].set_color(custom_dark_gray)
 
 # Color filling
 ax2.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)

@@ -6,8 +6,8 @@ from scipy import interpolate as inter
 from scipy.stats import gaussian_kde
 from statsmodels.distributions.empirical_distribution import ECDF
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 print("Hello. Starting!")
 
 # urls of the csv data from the API
@@ -19,8 +19,8 @@ url_fi = "https://www.metaculus.com/api2/questions/1341/download_csv/"
 url_fc = "https://www.metaculus.com/api2/questions/1342/download_csv/"
 url_L  = "https://www.metaculus.com/api2/questions/1343/download_csv/"
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # function to read, format, reduce, and transform the data
 def cdf_setter(url, xmin, xmax, q = 1000):
 
@@ -85,30 +85,30 @@ def cdf_setter(url, xmin, xmax, q = 1000):
 
      return cdf_f.copy(), df_pdf.copy()
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Running the function
 print("Reading and reducing data...")
 
 quantity = 10**6 # quantity of data in the simulation
 
 df_Rs_cdf, df_Rs_pdf = cdf_setter(url = url_Rs, xmin = 0.01, xmax = 1000, q = quantity)
-print("R_s done.")
+print("  Rs done.")
 df_fp_cdf, df_fp_pdf = cdf_setter(url = url_fp, xmin = 0.01, xmax = 1, q = quantity)
-print("f_p done.")
+print("  fp done.")
 df_ne_cdf, df_ne_pdf = cdf_setter(url = url_ne, xmin = 10**-6, xmax = 100, q = quantity)
-print("n_e done.")
+print("  ne done.")
 df_fl_cdf, df_fl_pdf = cdf_setter(url = url_fl, xmin = 10**-31, xmax = 1, q = quantity)
-print("f_l done.")
+print("  fl done.")
 df_fi_cdf, df_fi_pdf = cdf_setter(url = url_fi, xmin = 10**-20, xmax = 1, q = quantity)
-print("f_i done.")
+print("  fi done.")
 df_fc_cdf, df_fc_pdf = cdf_setter(url = url_fc, xmin = 10**-5, xmax = 1, q = quantity)
-print("f_c done.")
+print("  fc done.")
 df_L_cdf, df_L_pdf = cdf_setter(url = url_L, xmin = 10, xmax = 10**10, q = quantity)
-print("L done.")
+print("  L done.")
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Multiplying the factors to find the N's
 print("Multiplying the factors...")
 
@@ -120,12 +120,13 @@ Ns = (df_Rs_cdf["x_log"] *
       df_fc_cdf["x_log"] * 
       df_L_cdf["x_log"])
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Making the figures
-#------------------------------------------------------------------------------
+print("Making the figures...")
+#-------------------------------------------------------------------------------------------
 # HISTOGRAMS
-print("Making the histograms...")
+print("  Making the histograms...")
 
 # Number of bins for the histograms
 nbins = 1000
@@ -168,7 +169,7 @@ def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
      ax.spines['left'].set_color('dimgray')
      ax.spines['bottom'].set_color('dimgray')
 
-#-------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------
 # Creating a figure object with size 14x8 inches and 9 subfigs
 fig1, axes = plt.subplots(nrows = 3,
                           ncols = 3,
@@ -193,7 +194,7 @@ LaTeX = f"$10^{{{power}}}$"
 text = "Frequencies given by Metaculus' CDFs, n = " + LaTeX
 # A figure subtitle
 fig1.suptitle(text, fontsize = 14, color = custom_dark_gray)
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Rs
 histogram(ax = ax1, 
           df_f = df_Rs_cdf["x_log"],
@@ -275,7 +276,7 @@ histogram(ax = ax8,
           q = quantity,
           nbins = nbins)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # N cumulative fraction
 log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), nbins)
 weights = np.zeros_like(Ns) + 1./quantity
@@ -313,16 +314,16 @@ ax9.spines['bottom'].set_color('dimgray')
 ecdft = ECDF(Ns)
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
                  
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus histos.png", bbox_inches = "tight")
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # PLOTS
-print("Making the plots...")
+print("  Making the plots...")
 #---------------------------------------
 # Function to make the plot sub figures
 def plot(ax, df_f, color, label, xlabel, title):
@@ -352,7 +353,7 @@ def plot(ax, df_f, color, label, xlabel, title):
      ax.spines['bottom'].set_color('dimgray')
 
      ax.fill_between(df_f['x_log'], df_f['PDF'], color = "blue", alpha = 0.1)
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Create a figure object with size 14x8 inches and 9 subfigs
 fig2, axes = plt.subplots(nrows = 3,
                           ncols = 3,
@@ -364,7 +365,7 @@ ax4, ax5, ax6 = axes[1, 0], axes[1, 1], axes[1, 2]
 ax7, ax8, ax9 = axes[2, 0], axes[2, 1], axes[2, 2]
 
 fig2.suptitle("Drake equation factors by Metaculus", fontsize = 14, color = custom_dark_gray)
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Rs
 plot(ax = ax1, 
      df_f = df_Rs_pdf,
@@ -414,9 +415,9 @@ plot(ax = ax7,
      label = "Plot f7", 
      xlabel = "$L$ [Years]", 
      title = "Years a civilization releases detectable signs")
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # N PDF
-print('Making the "smooth plot"...')
+print('  Making the "smooth plot"...')
 
 # Estimating the PDF in log space, because it is not working well in linear
 log_data = np.log10(Ns)
@@ -424,7 +425,7 @@ N_density = gaussian_kde(log_data)
 x = np.linspace(min(log_data), max(log_data), 100)
 
 # This integral should be ~1
-print("The next integral should be ~1 \nIntegral =", simpson(y = N_density(x), x = x))
+print("  The next integral should be ~1 \n    Integral =", simpson(y = N_density(x), x = x))
 
 #---------------------------------------
 ax8.plot(x, N_density(x), 
@@ -452,9 +453,9 @@ ax8.spines['bottom'].set_color('dimgray')
 
 ax8.fill_between(x, N_density(x), color = "red", alpha = 0.1)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # N CDF
-print('Making the CDF...')
+print('  Making the CDF...')
 
 log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 100)
 
@@ -484,16 +485,16 @@ ax9.spines['bottom'].set_color('dimgray')
 
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDFs.png", bbox_inches = "tight")
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Double plot figure
-print("Making the double plot...")
+print("  Making the double plot...")
 
 # Creating a figure object with size 6x8 inches and 2 subfigs
 fig3, axes = plt.subplots(nrows = 2,
@@ -503,7 +504,7 @@ fig3, axes = plt.subplots(nrows = 2,
 # Axes is a 1D numpy array of AxesSubplot objects
 ax1, ax2 = axes[0], axes[1]
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # N frequency in a smooth curve
 log_space_bins_edges = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 1001)
 
@@ -626,7 +627,7 @@ text = "Probability of being alone \nin the observable Universe \n($N < 5 \\time
 ax1.text(10**-47, 0.0005, text, fontsize = 8, color = custom_dark_gray)
 ax1.text(10**-20, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # N CDF
 log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 1000)
 
@@ -692,16 +693,16 @@ formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability of being alone \nin the observable Universe: \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
 ax2.text(10**-38, 0.15, text, fontsize = 8, color = custom_dark_gray)
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDF and CDF.png", bbox_inches = "tight")
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 print("All done!")
 
 #-------------------------------------------
-# Calling plt.show() to make graphics appear.
+# Calling plt.show() to make the graphics appear.
 plt.show()

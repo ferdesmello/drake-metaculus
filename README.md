@@ -32,7 +32,7 @@ The Drake equation is usually computed using point estimates for every factor. H
 
 Run the .py file (it uses many common libraries: numpy, pandas, matplotlib, scipy, statsmodels). It will download API data from Metaculus's questions about the 7 factors of the Drake equation. The most recent forecast data - the PDFs and CDFs for every factor - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
 
-## The End Estimates
+## The end estimates
 <img src="Drake by Metaculus PDF and CDF.png" alt="Distribution of the estimates of the possible number of detectable alien civilizations in our Galaxy by Metaculus." style="height: 789px; width:589px;"/>
 
 ## The questions on Metaculus

@@ -168,6 +168,7 @@ def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
      ax.spines['top'].set_visible(False)
      ax.spines['left'].set_color(custom_dark_gray)
      ax.spines['bottom'].set_color(custom_dark_gray)
+     ax.tick_params(axis = 'both', colors = custom_dark_gray)
 
 #--------------------------------------------------------------------------------------------
 # Creating a figure object with size 14x8 inches and 9 subfigs
@@ -310,6 +311,7 @@ ax9.spines['right'].set_visible(False)
 ax9.spines['top'].set_visible(False)
 ax9.spines['left'].set_color(custom_dark_gray)
 ax9.spines['bottom'].set_color(custom_dark_gray)
+ax9.tick_params(axis = 'both', colors = custom_dark_gray)
 
 ecdft = ECDF(Ns)
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
@@ -351,8 +353,10 @@ def plot(ax, df_f, color, label, xlabel, title):
      ax.spines['top'].set_visible(False)
      ax.spines['left'].set_color(custom_dark_gray)
      ax.spines['bottom'].set_color(custom_dark_gray)
+     ax.tick_params(axis = 'both', colors = custom_dark_gray)
 
      ax.fill_between(df_f['x_log'], df_f['PDF'], color = "blue", alpha = 0.1)
+
 #-------------------------------------------------------------------------------------------
 # Create a figure object with size 14x8 inches and 9 subfigs
 fig2, axes = plt.subplots(nrows = 3,
@@ -450,6 +454,7 @@ ax8.spines['right'].set_visible(False)
 ax8.spines['top'].set_visible(False)
 ax8.spines['left'].set_color(custom_dark_gray)
 ax8.spines['bottom'].set_color(custom_dark_gray)
+ax8.tick_params(axis = 'both', colors = custom_dark_gray)
 
 ax8.fill_between(x, N_density(x), color = "red", alpha = 0.1)
 
@@ -482,6 +487,7 @@ ax9.spines['right'].set_visible(False)
 ax9.spines['top'].set_visible(False)
 ax9.spines['left'].set_color(custom_dark_gray)
 ax9.spines['bottom'].set_color(custom_dark_gray)
+ax9.tick_params(axis = 'both', colors = custom_dark_gray)
 
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
@@ -549,6 +555,7 @@ ax1.spines['right'].set_visible(False)
 ax1.spines['top'].set_visible(False)
 ax1.spines['left'].set_color(custom_dark_gray)
 ax1.spines['bottom'].set_color(custom_dark_gray)
+ax1.tick_params(axis = 'both', colors = custom_dark_gray)
 
 # Color filling
 ax1.fill_between(log_space_bins_midpoints, N_interpolated, color = "red", alpha = 0.1)
@@ -655,6 +662,7 @@ ax2.spines['right'].set_visible(False)
 ax2.spines['top'].set_visible(False)
 ax2.spines['left'].set_color(custom_dark_gray)
 ax2.spines['bottom'].set_color(custom_dark_gray)
+ax2.tick_params(axis = 'both', colors = custom_dark_gray)
 
 # Color filling
 ax2.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)

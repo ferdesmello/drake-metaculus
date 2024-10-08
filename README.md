@@ -6,7 +6,7 @@ This folder contains code that calculates the [Drake equation](https://en.wikipe
 
 ## Running instructions
 
-Run the Drake_Metaculus.py file (it uses many common libraries: [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [scipy](https://scipy.org/), and [statsmodels](https://www.statsmodels.org/stable/index.html)). It will download API data from Metaculus's questions about the 7 parameters of the Drake equation. The most recent forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
+Run the Drake_Metaculus.py file (it uses many common libraries: [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [scipy](https://scipy.org/), and [statsmodels](https://www.statsmodels.org/stable/index.html)). It will download data from Metaculus's questions about the 7 parameters of the Drake equation. The most recent forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
 
 ## The end estimates
 At the end, you will have three figures, the last and most important one is shown below.

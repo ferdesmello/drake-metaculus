@@ -4,54 +4,78 @@ import matplotlib.pyplot as plt
 from scipy.integrate import simpson
 from scipy import interpolate as inter
 from scipy.stats import gaussian_kde
+from scipy import stats
+from scipy import interpolate
 from statsmodels.distributions.empirical_distribution import ECDF
-
+import requests
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 print("Hello. Starting!")
 
-# urls of the csv data from the API
-url_Rs = "https://www.metaculus.com/api2/questions/1337/download_csv/"
-url_fp = "https://www.metaculus.com/api2/questions/1338/download_csv/"
-url_ne = "https://www.metaculus.com/api2/questions/1339/download_csv/"
-url_fl = "https://www.metaculus.com/api2/questions/1340/download_csv/"
-url_fi = "https://www.metaculus.com/api2/questions/1341/download_csv/"
-url_fc = "https://www.metaculus.com/api2/questions/1342/download_csv/"
-url_L  = "https://www.metaculus.com/api2/questions/1343/download_csv/"
+# URLs of the CSV data from the API
+url_Rs = "https://www.metaculus.com/api2/questions/1337"
+url_fp = "https://www.metaculus.com/api2/questions/1338"
+url_ne = "https://www.metaculus.com/api2/questions/1339"
+url_fl = "https://www.metaculus.com/api2/questions/1340"
+url_fi = "https://www.metaculus.com/api2/questions/1341"
+url_fc = "https://www.metaculus.com/api2/questions/1342"
+url_L  = "https://www.metaculus.com/api2/questions/1343"
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 # function to read, format, reduce, and transform the data
-def cdf_setter(url, xmin, xmax, q = 1000):
+def data_parser(url, xmin, xmax, q = 1000):
 
-     # dataframe for later use
-     cdf_f = pd.DataFrame()
+     #--------------------------------------------
+     # Read the data
+     # Make a GET request to the URL
+     response = requests.get(url)
 
-     # reading data
-     df_f = pd.read_csv(url)
+     # Check if the request was successful
+     if response.status_code == 200:
+          # Parse the JSON content
+          data = response.json()
 
-     # reducing data to just the PDF distribution
-     df_pdf = df_f.iloc[-1, 11:210].reset_index(drop = False)
-     df_pdf.columns = ['x_norm', 'PDF']
+          # Extract the forecast_values array
+          # For time weighted values
+          forecast_values = data['question']['aggregations']['recency_weighted']['latest']['forecast_values']
+          # For NOT time weighted values (but strange)
+          #forecast_values = data['question']['aggregations']['metaculus_prediction']['latest']['forecast_values']
 
-     df_pdf["x_norm"] = df_pdf["x_norm"].replace(to_replace = "pdf_at_", value = "", regex = True)
-     df_pdf["x_norm"] = df_pdf["x_norm"].replace(to_replace = "pdf_below_", value = "", regex = True)
-     df_pdf["x_norm"] = df_pdf["x_norm"].replace(to_replace = "or_below_", value = "", regex = True)
+     else:
+          print(f"Failed to retrieve data: Status code {response.status_code}")
+
+     #--------------------------------------------
+     # Get the CDF
+     x_norm = np.linspace(0, 1, len(forecast_values))
+
+     dictionary_cdf = {"x_norm": x_norm,
+                       "CDF": forecast_values}
+     df_cdf = pd.DataFrame(dictionary_cdf)
+     
+     df_cdf["x_norm"] = df_cdf["x_norm"].astype("float")
+     df_cdf["CDF"] = df_cdf["CDF"].astype("float")
+
+     #--------------------------------------------
+     # Get the PDF
+     # Create an interpolation function for the CDF
+     cdf_interp = interpolate.interp1d(x_norm, forecast_values, kind='linear', bounds_error=False, fill_value=(0, 1))
+
+     # Create a finer mesh for smoother plotting
+     x_fine = np.linspace(0, 1, len(forecast_values))
+     cdf_fine = cdf_interp(x_fine)
+
+     # Calculate PDF by numerical differentiation
+     pdf_values = np.gradient(cdf_fine, x_fine)
+
+     dictionary_pdf = {"x_norm": x_fine,
+                       "PDF": pdf_values}
+     df_pdf = pd.DataFrame(dictionary_pdf)
      
      df_pdf["x_norm"] = df_pdf["x_norm"].astype("float")
      df_pdf["PDF"] = df_pdf["PDF"].astype("float")
 
-     # reducing data to just the CDF distribution
-     df_cdf = df_f.iloc[-1, 211:411].reset_index(drop = False)
-     df_cdf.columns = ['x_norm', 'CDF']
-
-     df_cdf["x_norm"] = df_cdf["x_norm"].replace(to_replace = "cdf_at_", value = "", regex = True)
-     df_cdf["x_norm"] = df_cdf["x_norm"].replace(to_replace = "cdf_below_", value = "", regex = True)
-     df_cdf["x_norm"] = df_cdf["x_norm"].replace(to_replace = "or_below_", value = "", regex = True)
-     
-     df_cdf["x_norm"] = pd.to_numeric(df_cdf["x_norm"], errors = 'coerce')
-     df_cdf["CDF"] = df_cdf["CDF"].astype("float")
-
+     #--------------------------------------------
      # Adjusting the CDF to start at 0
      df_cdf['CDF'] -= df_cdf['CDF'].min()
      # Normalizing the CDF to end at 1
@@ -79,7 +103,10 @@ def cdf_setter(url, xmin, xmax, q = 1000):
      # Sampling
      sampled_normalized = inverse_cdf(uniform_samples)
 
+     #---------------------------------------------
      # Filling cdf_f dataframe to be returned
+          # dataframe for later use
+     cdf_f = pd.DataFrame()
      cdf_f["x_log"] = pd.DataFrame(sampled_normalized).apply(lambda x : 10**x )
      cdf_f["cdf_values"] = pd.DataFrame(uniform_samples)
 
@@ -92,19 +119,19 @@ print("Reading and reducing data...")
 
 quantity = 10**6 # quantity of data in the simulation
 
-df_Rs_cdf, df_Rs_pdf = cdf_setter(url = url_Rs, xmin = 0.01, xmax = 1000, q = quantity)
+df_Rs_cdf, df_Rs_pdf = data_parser(url = url_Rs, xmin = 0.01, xmax = 1000, q = quantity)
 print("  Rs done.")
-df_fp_cdf, df_fp_pdf = cdf_setter(url = url_fp, xmin = 0.01, xmax = 1, q = quantity)
+df_fp_cdf, df_fp_pdf = data_parser(url = url_fp, xmin = 0.01, xmax = 1, q = quantity)
 print("  fp done.")
-df_ne_cdf, df_ne_pdf = cdf_setter(url = url_ne, xmin = 10**-6, xmax = 100, q = quantity)
+df_ne_cdf, df_ne_pdf = data_parser(url = url_ne, xmin = 10**-6, xmax = 100, q = quantity)
 print("  ne done.")
-df_fl_cdf, df_fl_pdf = cdf_setter(url = url_fl, xmin = 10**-31, xmax = 1, q = quantity)
+df_fl_cdf, df_fl_pdf = data_parser(url = url_fl, xmin = 10**-31, xmax = 1, q = quantity)
 print("  fl done.")
-df_fi_cdf, df_fi_pdf = cdf_setter(url = url_fi, xmin = 10**-20, xmax = 1, q = quantity)
+df_fi_cdf, df_fi_pdf = data_parser(url = url_fi, xmin = 10**-20, xmax = 1, q = quantity)
 print("  fi done.")
-df_fc_cdf, df_fc_pdf = cdf_setter(url = url_fc, xmin = 10**-5, xmax = 1, q = quantity)
+df_fc_cdf, df_fc_pdf = data_parser(url = url_fc, xmin = 10**-5, xmax = 1, q = quantity)
 print("  fc done.")
-df_L_cdf, df_L_pdf = cdf_setter(url = url_L, xmin = 10, xmax = 10**10, q = quantity)
+df_L_cdf, df_L_pdf = data_parser(url = url_L, xmin = 10, xmax = 10**10, q = quantity)
 print("  L done.")
 
 #-------------------------------------------------------------------------------------------
@@ -577,8 +604,8 @@ ax1.fill_between(points,
 probability_not_alone_MW = (ecdft(10**12) - ecdft(1))*100
 formatted_probability = f"{probability_not_alone_MW:.0f}%"
 text = "Probability of\n NOT being\n  alone in the\n   Milky Way\n    galaxy\n    ($N > 1$): " + formatted_probability
-ax1.text(9*10**1, 0.0033, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**1, 0.00025, f'{probability_not_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
+ax1.text(5*10**2, 0.0017, text, fontsize = 8, color = custom_dark_gray)
+ax1.text(3*10**0, 0.00020, f'{probability_not_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #---------------------------------------
 # Alone in the Galaxy hatch filling and line
@@ -604,8 +631,8 @@ ax1.vlines(x = 1,
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
 text = "Probability of being alone \nin the Milky Way galaxy \n($N < 1$): " + formatted_probability
-ax1.text(10**-29, 0.0025, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**-8, 0.0008, f'{probability_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
+ax1.text(5*10**-32, 0.0028, text, fontsize = 8, color = custom_dark_gray)
+ax1.text(5*10**-9, 0.0013, f'{probability_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #---------------------------------------
 # Alone in the observable Universe hatch filling and line
@@ -631,8 +658,8 @@ ax1.vlines(x = 5*10**-13,
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability of being alone \nin the observable Universe \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
-ax1.text(10**-47, 0.0005, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**-20, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12, color = custom_dark_gray)
+ax1.text(10**-51, 0.0008, text, fontsize = 8, color = custom_dark_gray)
+ax1.text(10**-24, 0.00028, f'{probability_alone_OU:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #-------------------------------------------------------------------------------------------
 # N CDF
@@ -682,7 +709,7 @@ ax2.vlines(x = 1,
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
 text = "Probability of being alone \nin the Milky Way galaxy: \n($N < 1$): " + formatted_probability
-ax2.text(5*10**-23, 0.7, text, fontsize = 8, color = custom_dark_gray)
+ax2.text(5*10**-25, 0.78, text, fontsize = 8, color = custom_dark_gray)
 
 #---------------------------------------
 # Alone in the observable Universe line
@@ -699,7 +726,7 @@ ax2.vlines(x = 5*10**-13,
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability of being alone \nin the observable Universe: \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
-ax2.text(10**-38, 0.15, text, fontsize = 8, color = custom_dark_gray)
+ax2.text(10**-40, 0.24, text, fontsize = 8, color = custom_dark_gray)
 
 #-------------------------------------------------------------------------------------------
 # Adjusting the vertical and horizontal spacing, so there are no overlapings

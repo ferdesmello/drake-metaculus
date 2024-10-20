@@ -2,11 +2,11 @@
 
 ## Overview
 
-This folder contains code that calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using probability functions (not point estimates) for the equation parameters, obtaining a distribution (not a point estimate) of the possible number of detectable alien civilizations in our Galaxy. This is done using forecast data from the [Metaculus](https://www.metaculus.com/home/) website.
+This folder contains code that calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using distrbution of estimates (not one point estimates) for the equation parameters, obtaining a distribution (not a point estimate) of the possible number of detectable alien civilizations in our Galaxy. This is done using forecast data from the [Metaculus](https://www.metaculus.com/home/) website.
 
 ## Running instructions
 
-Run the Drake_Metaculus.py file (it uses many common libraries: [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [scipy](https://scipy.org/), and [statsmodels](https://www.statsmodels.org/stable/index.html)). It will download data from Metaculus's questions about the 7 parameters of the Drake equation. The most recent forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
+Run the Drake_Metaculus.py file (it uses many common libraries: [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [scipy](https://scipy.org/), and [statsmodels](https://www.statsmodels.org/stable/index.html)). It will download data from Metaculus's questions about the 7 parameters of the Drake equation. Using the API, the most recent forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
 
 ## The end estimates
 At the end, you will have three figures, the last and most important one is shown below.

@@ -4,9 +4,13 @@
 
 This folder contains code that calculates the [Drake equation](https://en.wikipedia.org/wiki/Drake_equation) using distributions of estimates (not one-point estimates) for the equation parameters, obtaining a distribution (not a point estimate) of the possible number of detectable alien civilizations in our Galaxy. That is done using forecast data from the [Metaculus](https://www.metaculus.com/home/) website.
 
+If you want to know more about all of this and about the process of doing it all, take a look at [this post](https://fdesmello.wordpress.com/2024/10/21/the-drake-equation-metaculus-and-alien-civilizations/).
+
 ## Running instructions
 
 Run the Drake_Metaculus.py file (it uses many common libraries: [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [scipy](https://scipy.org/), and [statsmodels](https://www.statsmodels.org/stable/index.html)). It will download data from Metaculus's questions about the 7 parameters of the Drake equation. Using the API, the most recent forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
+
+Metaculus has changed the format of the API output twice since I finished most of the code, which broke the parsing and I had to change the code twice in response. This may happen again, so I can't guarantee that the code will always work. But I will try to keep it working.
 
 ## The end estimates
 At the end, you will have three figures, the last and most important one is shown below.

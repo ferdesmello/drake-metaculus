@@ -23,7 +23,7 @@ url_L  = "https://www.metaculus.com/api2/questions/1343"
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-# function to read, format, reduce, and transform the data
+# function to read, format, reduce, and transform data in the API JSON file
 def data_parser(url, xmin, xmax, q = 1000):
 
      #--------------------------------------------

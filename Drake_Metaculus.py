@@ -1,18 +1,34 @@
+"""
+This script fetches data from the Metaculus API, processes it to obtain CDF and PDF data,
+and provides functions to visualize the data using histograms and lineplots.
+
+Modules:
+    - numpy
+    - pandas
+    - matplotlib
+    - scipy
+    - statsmodels
+    - requests
+    - typing
+"""
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.axes
 from scipy.integrate import simpson
 from scipy import interpolate as inter
 from scipy.stats import gaussian_kde
-from scipy import stats
 from scipy import interpolate
 from statsmodels.distributions.empirical_distribution import ECDF
 import requests
-#-------------------------------------------------------------------------------------------
+from typing import Dict, Union
+
 #-------------------------------------------------------------------------------------------
 print("Hello. Starting!")
 
-# URLs of the CSV data from the API
+# URLs of the API data
 url_Rs = "https://www.metaculus.com/api2/questions/1337"
 url_fp = "https://www.metaculus.com/api2/questions/1338"
 url_ne = "https://www.metaculus.com/api2/questions/1339"
@@ -23,9 +39,25 @@ url_L  = "https://www.metaculus.com/api2/questions/1343"
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-# function to read, format, reduce, and transform data in the API JSON file
-def data_parser(url, xmin, xmax, q = 1000):
+def data_parser(url: str, 
+                xmin: float, 
+                xmax: float, 
+                q: int = 1000) -> tuple[Dict[float, float], Dict[float, float]]:
+     """
+     Parses (read, format, reduce, and transform) data from a given Metaculus 
+     API URL JSON file and processes it to obtain CDF and PDF data.
 
+     Args:
+          url (str): The URL of the Metaculus API question.
+          xmin (float): The minimum value for the x-axis.
+          xmax (float): The maximum value for the x-axis.
+          q (int): The number of points sampled. Default is 1000.
+
+     Returns:
+          tuple of dictionaries:
+          cdf_f (float, float): A dictionary containing the CDF data.
+          df_pdf (float, float): A dictionary containing the PDF data.
+     """
      #--------------------------------------------
      # Read the data
      # Make a GET request to the URL
@@ -76,36 +108,35 @@ def data_parser(url, xmin, xmax, q = 1000):
      df_pdf["PDF"] = df_pdf["PDF"].astype("float")
 
      #--------------------------------------------
-     # Adjusting the CDF to start at 0
+     # Adjust the CDF to start at 0
      df_cdf['CDF'] -= df_cdf['CDF'].min()
-     # Normalizing the CDF to end at 1
+     # Normalize the CDF to end at 1
      df_cdf['CDF'] /= df_cdf['CDF'].max()
 
      # Random number generator
      uniform_samples = np.random.uniform(0, 1, q)
 
-     # Transforming x range from 0-1 to the real xmin-xmax
+     # Transform x range from 0-1 to the real xmin-xmax
      xmin_log = np.log10(xmin)
      xmax_log = np.log10(xmax)
 
      df_cdf["x_log"] = pd.DataFrame(df_cdf["x_norm"]).apply(lambda x : (xmin_log + x * (xmax_log - xmin_log)))
      df_pdf["x_log"] = pd.DataFrame(df_pdf["x_norm"]).apply(lambda x : 10**(xmin_log + x * (xmax_log - xmin_log)))
 
-     # Calculating the area under the curve
+     # Calculate the area under the curve
      total_area = simpson(y = df_pdf["PDF"], x = df_pdf["x_log"])
-     # Normalizing the PDF values so that the sum equals 1
+     # Normalize the PDF values so that the sum equals 1
      df_pdf['PDF'] = df_pdf["PDF"] / total_area
      #df_pdf['PDF'] = df_pdf["PDF"] / df_pdf["PDF"].sum()
      
      # Inverse interpolation
      inverse_cdf = inter.CubicSpline(df_cdf["CDF"], df_cdf["x_log"])
 
-     # Sampling
+     # Sample
      sampled_normalized = inverse_cdf(uniform_samples)
 
      #---------------------------------------------
-     # Filling cdf_f dataframe to be returned
-          # dataframe for later use
+     # Fill in the cdf_f dataframe to be returned
      cdf_f = pd.DataFrame()
      cdf_f["x_log"] = pd.DataFrame(sampled_normalized).apply(lambda x : 10**x )
      cdf_f["cdf_values"] = pd.DataFrame(uniform_samples)
@@ -114,8 +145,8 @@ def data_parser(url, xmin, xmax, q = 1000):
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-# Running the function
-print("Reading and reducing data...")
+# Run the function
+print("Reading and reducing the data...")
 
 quantity = 10**6 # quantity of data in the simulation
 
@@ -136,7 +167,7 @@ print("  L done.")
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-# Multiplying the factors to find the N's
+# Multiply the factors to find the N's
 print("Multiplying the factors...")
 
 Ns = (df_Rs_cdf["x_log"] * 
@@ -149,7 +180,7 @@ Ns = (df_Rs_cdf["x_log"] *
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-# Making the figures
+# Make the figures
 print("Making the figures...")
 #-------------------------------------------------------------------------------------------
 # HISTOGRAMS
@@ -159,12 +190,34 @@ print("  Making the histograms...")
 nbins = 1000
 # Custom dark gray color between dimgray and black
 custom_dark_gray = (0.2, 0.2, 0.2)
+
 #---------------------------------------
-# Function to make the histograms sub figures
-def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
+def histogram(ax: matplotlib.axes.Axes, 
+              df_f: Union[np.ndarray, pd.Series], 
+              color: str, 
+              edgecolor: str, 
+              label: str, 
+              xlabel: str, 
+              title: str, 
+              q: int, 
+              nbins: int) -> None:
+     """
+     Creates a Matplotlib histogram subfigure.
+
+     Args:
+          ax (matplotlib.axes.Axes): The axes on which to plot the histogram.
+          df_f (array-like): Column in the pandas dataframe to be plotted in the histogram.
+          color (str): The color of the histogram bars.
+          edgecolor (str): The color of the edges of the histogram bars.
+          label (str): The label for the histogram.
+          xlabel (str): The label for the x-axis.
+          title (str): The title of the histogram.
+          q (int): The quantity of data in the simulation for the normalization weights.
+          nbins (int): The number of bins for the histogram.
+     """
 
      log_space_bins = np.logspace(np.log10(min(df_f)), np.log10(max(df_f)), nbins)
-     # I am just using the frequency per bin, it is not a normalization
+     # It is just the frequency per bin, it is not a normalization
      weights = np.zeros_like(df_f) + 1./q
 
      ax.hist(df_f,
@@ -198,7 +251,7 @@ def histogram(ax, df_f, color, edgecolor, label, xlabel, title, q, nbins):
      ax.tick_params(axis = 'both', colors = custom_dark_gray)
 
 #--------------------------------------------------------------------------------------------
-# Creating a figure object with size 14x8 inches and 9 subfigs
+# Create a figure object with size 14x8 inches and 9 subfigs
 fig1, axes = plt.subplots(nrows = 3,
                           ncols = 3,
                           figsize = (14, 8))
@@ -344,7 +397,7 @@ ecdft = ECDF(Ns)
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
                  
 #-------------------------------------------------------------------------------------------
-# Adjusting the vertical and horizontal spacing, so there are no overlapings
+# Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus histos.png", bbox_inches = "tight")
@@ -353,9 +406,26 @@ plt.savefig("Drake by Metaculus histos.png", bbox_inches = "tight")
 #-------------------------------------------------------------------------------------------
 # PLOTS
 print("  Making the plots...")
+
 #---------------------------------------
-# Function to make the plot sub figures
-def plot(ax, df_f, color, label, xlabel, title):
+def plot(ax: matplotlib.axes.Axes, 
+         df_f: Union[np.ndarray, pd.Series],
+         color: str, 
+         label: str, 
+         xlabel: str, 
+         title: str) -> None:
+     """
+     Creates a Matplotlib lineplot subfigure.
+
+     Args:
+          ax (matplotlib.axes.Axes): The axes on which to plot the lineplot.
+          df_f (array-like): Column in the pandas dataframe to be plotted in the lineplot.
+          color (str): The color of the lines.
+          label (str): The label for the lineplot.
+          xlabel (str): The label for the x-axis.
+          title (str): The title of the lineplot.
+     """
+
      ax.plot(df_f['x_log'],
              df_f['PDF'],
              color = color,
@@ -450,7 +520,7 @@ plot(ax = ax7,
 # N PDF
 print('  Making the "smooth plot"...')
 
-# Estimating the PDF in log space, because it is not working well in linear
+# Estimate the PDF in log space, because it is not working well in linear
 log_data = np.log10(Ns)
 N_density = gaussian_kde(log_data)
 x = np.linspace(min(log_data), max(log_data), 100)
@@ -519,7 +589,7 @@ ax9.tick_params(axis = 'both', colors = custom_dark_gray)
 ax9.fill_between(log_space_bins, ecdft(log_space_bins), color = "red", alpha = 0.1)
 
 #-------------------------------------------------------------------------------------------
-# Adjusting the vertical and horizontal spacing, so there are no overlapings
+# Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDFs.png", bbox_inches = "tight")
@@ -529,7 +599,7 @@ plt.savefig("Drake by Metaculus PDFs.png", bbox_inches = "tight")
 # Double plot figure
 print("  Making the double plot...")
 
-# Creating a figure object with size 6x8 inches and 2 subfigs
+# Create a figure object with size 6x8 inches and 2 subfigs
 fig3, axes = plt.subplots(nrows = 2,
                           ncols = 1,
                           figsize = (6, 8))
@@ -547,8 +617,8 @@ log_bin_widths = np.diff(log_space_bins_edges)
 total_observations = counts.sum()
 N_density = counts / total_observations
 
-# Interpolating on the data from the histogram
-# Using the middle of the bins, not the edges
+# Interpolate on the data from the histogram
+# Use the middle of the bins, not the edges
 log_space_bins_midpoints = (log_space_bins_edges[:-1] + log_space_bins_edges[1:]) / 2
 log_of_bins_midpoints = np.log10(log_space_bins_midpoints)
 interpolation = inter.UnivariateSpline(log_of_bins_midpoints, N_density, s = 1./(quantity))
@@ -599,7 +669,7 @@ ax1.fill_between(points,
                  linewidth = 0.0,
                  zorder = 1)
 
-# Adding text with info of probability of being alone in the galaxy
+# Text with info of probability of being alone in the galaxy
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_not_alone_MW = (ecdft(10**12) - ecdft(1))*100
 formatted_probability = f"{probability_not_alone_MW:.0f}%"
@@ -626,7 +696,7 @@ ax1.vlines(x = 1,
            linewidth = 1.5, 
            zorder = 3)
 
-# Adding text with info of probability of being alone in the galaxy
+# Text with info of probability of being alone in the galaxy
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
@@ -653,7 +723,7 @@ ax1.vlines(x = 5*10**-13,
            linewidth = 1.5, 
            zorder = 4)
 
-# Adding text with info of probability of being alone in the observable Universe
+# Text with info of probability of being alone in the observable Universe
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
@@ -704,7 +774,7 @@ ax2.vlines(x = 1,
            linewidth = 1.5, 
            zorder = 3)
 
-# Adding text with info of probability of being alone in the galaxy
+# Text with info of probability of being alone in the galaxy
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
@@ -721,7 +791,7 @@ ax2.vlines(x = 5*10**-13,
            linewidth = 1.5, 
            zorder = 4)
 
-# Adding text with info of probability of being alone in the observable Universe
+# Text with info of probability of being alone in the observable Universe
 # {:.0f} formats the number to have 0 places after the decimal, effectively making it an integer
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
@@ -729,7 +799,7 @@ text = "Probability of being alone \nin the observable Universe: \n($N < 5 \\tim
 ax2.text(10**-40, 0.24, text, fontsize = 8, color = custom_dark_gray)
 
 #-------------------------------------------------------------------------------------------
-# Adjusting the vertical and horizontal spacing, so there are no overlapings
+# Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
 plt.savefig("Drake by Metaculus PDF and CDF.png", bbox_inches = "tight")
@@ -739,5 +809,5 @@ plt.savefig("Drake by Metaculus PDF and CDF.png", bbox_inches = "tight")
 print("All done!")
 
 #-------------------------------------------
-# Calling plt.show() to make the graphics appear.
+# Call plt.show() to make the graphics appear.
 plt.show()

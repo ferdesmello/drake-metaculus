@@ -1,6 +1,7 @@
 """
-This script fetches data from the Metaculus API, processes it to obtain CDF and PDF data,
-and provides functions to visualize the data using histograms and lineplots.
+This script fetches data from the Metaculus API, processes it to obtain CDF and 
+PDF data for some questions regarding the parameters of the Drake equation, and 
+plot the results in figures.
 
 Modules:
     - numpy
@@ -11,6 +12,7 @@ Modules:
     - requests
     - typing
 """
+
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
 import numpy as np

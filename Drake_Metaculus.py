@@ -703,8 +703,8 @@ ax1.vlines(x = 1,
 probability_alone_MW = ecdft(1)*100
 formatted_probability = f"{probability_alone_MW:.0f}%"
 text = "Probability of being alone \nin the Milky Way galaxy \n($N < 1$): " + formatted_probability
-ax1.text(5*10**-32, 0.0028, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(5*10**-9, 0.0013, f'{probability_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray)
+ax1.text(5*10**-36, 0.0016, text, fontsize = 8, color = custom_dark_gray)
+ax1.text(5*10**-15, 0.0008, f'{probability_alone_MW:.0f}%', fontsize = 12, color = custom_dark_gray, zorder = 5)
 
 #---------------------------------------
 # Alone in the observable Universe hatch filling and line
@@ -730,8 +730,8 @@ ax1.vlines(x = 5*10**-13,
 probability_alone_OU = ecdft(5*10**-13)*100
 formatted_probability = f"{probability_alone_OU:.0f}%"
 text = "Probability of being alone \nin the observable Universe \n($N < 5 \\times 10^{{-13}}$): " + formatted_probability
-ax1.text(10**-51, 0.0008, text, fontsize = 8, color = custom_dark_gray)
-ax1.text(10**-24, 0.00028, f'{probability_alone_OU:.0f}%', fontsize = 12, color = custom_dark_gray)
+ax1.text(10**-54, 0.0004, text, fontsize = 8, color = custom_dark_gray)
+ax1.text(10**-26, 0.00025, f'{probability_alone_OU:.0f}%', fontsize = 12, color = custom_dark_gray)
 
 #-------------------------------------------------------------------------------------------
 # N CDF

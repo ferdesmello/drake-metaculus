@@ -4,13 +4,14 @@ PDF data for some questions regarding the parameters of the Drake equation, and
 plot the results in figures.
 
 Modules:
-    - numpy
-    - pandas
-    - matplotlib
-    - scipy
-    - statsmodels
-    - requests
-    - typing
+     - numpy
+     - pandas
+     - matplotlib
+     - scipy
+     - statsmodels
+     - requests
+     - time
+     - typing
 """
 
 #-------------------------------------------------------------------------------------------
@@ -25,6 +26,7 @@ from scipy.stats import gaussian_kde
 from scipy import interpolate
 from statsmodels.distributions.empirical_distribution import ECDF
 import requests
+import time
 from typing import Dict, Union
 
 #-------------------------------------------------------------------------------------------
@@ -78,6 +80,10 @@ def data_parser(url: str,
 
      else:
           print(f"Failed to retrieve data: Status code {response.status_code}")
+          raise Exception(f"Failed to retrieve data from {url}: Status code {response.status_code}")
+     
+     # Add delay to avoid rate limiting
+     time.sleep(2)
 
      #--------------------------------------------
      # Get the CDF

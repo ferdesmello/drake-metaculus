@@ -8,9 +8,14 @@ If you want to know more about all of this and about the process of doing it all
 
 ## Running instructions
 
-Run the Drake_Metaculus.py file (it uses many common libraries: [numpy](https://numpy.org/), [pandas](https://pandas.pydata.org/), [matplotlib](https://matplotlib.org/), [scipy](https://scipy.org/), and [statsmodels](https://www.statsmodels.org/stable/index.html)). It will download data from Metaculus's questions about the 7 parameters of the Drake equation. Using the API, the most recent forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. In my machine, it took ~1 minute to finish.
+Run the _Drake_Metaculus.py_ file. It has three ways of using data depending on the value of the variable _data_type_ (set initially as _data_type_ = 0). 
+* **0** will use local data: CSV data downloaded from all the 7 Metaculus' questions about the parameters of the Drake equation. If you have a Metaculus token for the API, you can use the other values. (read [the API documentation](https://www.metaculus.com/api/) to know how to create your token) 
+* **1** will download _your_ forecast for all the questions. (You must have predicted on those questions for this to work.)
+* **2** will download the _aggregated_ forecast for all the questions. (This one probably will not work without some special authorization.)
 
-Metaculus has changed the format of the API output twice since I finished most of the code, which broke the parsing and I had to change the code twice in response. This may happen again, so I can't guarantee that the code will always work. But I will try to keep it working.
+In any case, forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. On my machine, it took ~1 minute to finish.
+
+Metaculus has changed the format of the API output ~~twice~~ thrice since I finished most of the code, which broke the parsing, and I had to change the code ~~twice~~ thrice in response. This may happen again, so I can't guarantee that the code will always work. But I will try to keep it working.
 
 ## The end estimates
 At the end, you will have three figures, the last and most important one is shown below.

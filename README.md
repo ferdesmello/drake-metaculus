@@ -8,10 +8,10 @@ If you want to know more about all of this and about the process of doing it all
 
 ## Running instructions
 
-Run the _Drake_Metaculus.py_ file. It has three ways of using data depending on the value of the variable _data_type_ (set initially as _data_type_ = 0). 
+Run the _Drake_Metaculus.py_ file. It has three ways of using data depending on the value of the variable _data_type_ (set initially as _data_type_ = 0). Search for it. 
 * **0** will use local data: CSV data downloaded from all the 7 Metaculus' questions about the parameters of the Drake equation. If you have a Metaculus token for the API, you can use the other values. (read [the API documentation](https://www.metaculus.com/api/) to know how to create your token) 
 * **1** will download _your_ forecast for all the questions. (You must have predicted on those questions for this to work.)
-* **2** will download the _aggregated_ forecast for all the questions. (This one probably will not work without some special authorization.)
+* **2** will download the _aggregated_ forecast for all the questions. (This one probably will not work without some special authorization. Read the API documentation!)
 
 In any case, forecast data - the PDFs and CDFs for each parameter - will be parsed and used to calculate $N$, the number of detectable alien civilizations in our Galaxy. The result will be presented in some figures. On my machine, it took ~1 minute to finish.
 

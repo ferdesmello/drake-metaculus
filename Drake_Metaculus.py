@@ -29,10 +29,11 @@ from scipy import interpolate
 from statsmodels.distributions.empirical_distribution import ECDF
 import requests
 import time
-from typing import Union
+from typing import Optional, Union
 from dotenv import load_dotenv
 import os
 import json
+from pathlib import Path
 
 #-------------------------------------------------------------------------------------------
 print("Hello. Starting!")
@@ -40,7 +41,10 @@ print("Hello. Starting!")
 # Set up the headers with the API key
 load_dotenv()
 
-load_dotenv("../KEYs/My_METACULUS_API_Key.env")
+# Get the directory where THIS script is located
+base_path = Path.cwd()
+key_address = base_path.parent / "KEYS" / "My_METACULUS_API_Key.env"
+load_dotenv(key_address)
 API_KEY = os.getenv("METACULUS_API_Key")
 
 headers = {
@@ -77,10 +81,10 @@ q_path_L  = "data/Drake's_Equation_Seventh_Parameter_L/question_data.csv"
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-def data_parser(url: str = None, 
+def data_parser(url: Optional[str] = None, 
                 d_type: int = 0,
-                f_path: str = None, 
-                q_path: str = None,
+                f_path: Optional[str] = None, 
+                q_path: Optional[str] = None,
                 q: int = 1000,
                 ) -> tuple[pd.DataFrame, pd.DataFrame]:
      """
@@ -102,6 +106,10 @@ def data_parser(url: str = None,
           df_pdf (float, float): A pandas dataframe containing the PDF data.
      """
     
+     forecast_values: Optional[list[float]] = None
+     xmin: Optional[float] = None
+     xmax: Optional[float] = None
+
     # --- BRANCH 1: LOAD FROM LOCAL CSV ---
      if f_path and q_path and d_type == 0:
           # 1. Get Range from question_data.csv
@@ -161,7 +169,7 @@ def data_parser(url: str = None,
      #--------------------------------------------
      # Get the PDF
      # Create an interpolation function for the CDF
-     cdf_interp = interpolate.interp1d(x_norm, forecast_values, kind='linear', bounds_error=False, fill_value=(0, 1))
+     cdf_interp = interpolate.interp1d(x_norm, forecast_values, kind='linear', bounds_error=False, fill_value=(0.0, 1.0))
 
      # Create a finer mesh for smoother plotting
      x_fine = np.linspace(0, 1, len(forecast_values))
@@ -218,9 +226,20 @@ def data_parser(url: str = None,
 # Run the function
 print("Reading and reducing the data...")
 
-# Do you want to use the local data (0), user forecast via API (1), or community forecast via API (2)?
-# API data may not be available for some questions, so you may want to use the local data for those.
-data_type = 0
+# Do you want to use:
+# (0) the local CSVs data, 
+# (1) user forecast via API, or
+# (2) community forecast via API?
+# API data may not be available for some questions, 
+# so you may want to use the local data for those.
+data_type = 1
+
+if data_type == 0:
+     data_origin = "local_CSVs"
+elif data_type == 1:
+     data_origin = "API_user"
+elif data_type == 2:
+     data_origin = "API_community"
 
 # Quantity of data in the simulation.
 quantity = 10**6
@@ -475,7 +494,8 @@ ax9.fill_between(log_space_bins, ecdft(log_space_bins), color="red", alpha=0.1)
 # Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
-plt.savefig("Drake by Metaculus histos.png", bbox_inches="tight")
+path = base_path / "figures" / f"Drake_by_Metaculus_histos_{data_origin}.png"
+plt.savefig(path, bbox_inches="tight")
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
@@ -667,7 +687,8 @@ ax9.fill_between(log_space_bins, ecdft(log_space_bins), color="red", alpha=0.1)
 # Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
-plt.savefig("Drake by Metaculus PDFs.png", bbox_inches="tight")
+path = base_path / "figures" / f"Drake_by_Metaculus_PDFs_{data_origin}.png"
+plt.savefig(path, bbox_inches="tight")
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
@@ -988,7 +1009,8 @@ ax2.annotate(text,
 # Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
-plt.savefig("Drake by Metaculus PDF and CDF.png", bbox_inches="tight")
+path = base_path / "figures" / f"Drake_by_Metaculus_PDF_and_CDF_{data_origin}.png"
+plt.savefig(path, bbox_inches="tight")
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------

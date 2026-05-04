@@ -18,9 +18,9 @@ In any case, forecast data - the PDFs and CDFs for each parameter - will be pars
 Metaculus has changed the format of the API output ~~twice~~ thrice since I finished most of the code, which broke the parsing, and I had to change the code ~~twice~~ thrice in response. This may happen again, so I can't guarantee that the code will always work. But I will try to keep it working.
 
 ## The end estimates
-At the end, you will have three figures, the last and most important one is shown below.
+At the end, you will some figures that you can check on the [figures](https://github.com/ferdesmello/drake-metaculus/blob/main/figures/) folder.
 
-<img src="Drake by Metaculus PDF and CDF.png" alt="Distribution of the estimates of the possible number of detectable alien civilizations in our Galaxy by Metaculus." style="height: 789px; width:589px;"/>
+<img src="https://github.com/ferdesmello/drake-metaculus/blob/main/figures/Drake_by_Metaculus_PDF_and_CDF_local_CSVs.png" alt="Distribution of the estimates of the possible number of detectable alien civilizations in our Galaxy by Metaculus." style="height: 789px; width:589px;"/>
 
 ## The Drake equation
 

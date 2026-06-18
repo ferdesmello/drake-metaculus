@@ -232,7 +232,7 @@ print("Reading and reducing the data...")
 # (2) community forecast via API?
 # API data may not be available for some questions, 
 # so you may want to use the local data for those.
-data_type = 1
+data_type = 0
 
 if data_type == 0:
      data_origin = "local_CSVs"
@@ -692,16 +692,14 @@ plt.savefig(path, bbox_inches="tight")
 
 #-------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------
-# Double plot figure
-print("  Making the double plot...")
+# Double plot
+# Figure 1 PDF
+print("  Making the PDF plot...")
 
-# Create a figure object with size 6x8 inches and 2 subfigs
-fig3, axes = plt.subplots(nrows=2,
+# Create a figure object with size 6x4 inches and 1 subfig
+fig3, ax1 = plt.subplots(nrows=1,
                           ncols=1,
-                          figsize=(6, 8))
-
-# Axes is a 1D numpy array of AxesSubplot objects
-ax1, ax2 = axes[0], axes[1]
+                          figsize=(6, 4))
 
 #-------------------------------------------------------------------------------------------
 # N frequency in a smooth curve
@@ -909,46 +907,63 @@ ax1.text(x,
          va='bottom',
          zorder=10)
 
+# Adjust the vertical and horizontal spacing, so there are no overlapings
+plt.tight_layout()
+
+path = base_path / "figures" / f"Drake_by_Metaculus_PDF_{data_origin}.png"
+plt.savefig(path, bbox_inches="tight")
+
+#-------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+# Double plot
+# Figure 2 CDF
+print("  Making the CDF plot...")
+
+# Create a figure object with size 6x4 inches and 1 subfig
+fig4, ax1 = plt.subplots(nrows=1,
+                          ncols=1,
+                          figsize=(6, 4))
+
 #-------------------------------------------------------------------------------------------
 # N CDF
 log_space_bins = np.logspace(np.log10(min(Ns)), np.log10(max(Ns)), 1000)
 
-ax2.ecdf(Ns, 
+ax1.ecdf(Ns, 
          color="red", 
          linewidth=2,
          label="Plot N ecdf", 
          zorder=7)
 
 # Limits of the plot, to know where to put the text
-#xmin, xmax = ax2.get_xlim()
-ymin, ymax = ax2.get_ylim()
+#xmin, xmax = ax1.get_xlim()
+ymin, ymax = ax1.get_ylim()
 
 # Design
-ax2.set_xlabel("$N$", fontsize=12, color=custom_dark_gray)
-ax2.set_ylabel("Cumulative probability", fontsize=10, color=custom_dark_gray)
-ax2.set_title("CDF of the number of civilizations in our Galaxy", fontsize=12, pad=10, color=custom_dark_gray)
-#ax2.grid(True, linestyle=":", linewidth="1")
+ax1.set_xlabel("$N$", fontsize=12, color=custom_dark_gray)
+ax1.set_ylabel("Cumulative probability", fontsize=10, color=custom_dark_gray)
+ax1.set_title("CDF of the number of civilizations in our Galaxy", fontsize=12, pad=10, color=custom_dark_gray)
+#ax1.grid(True, linestyle=":", linewidth="1")
 
 # Axes
-ax2.set_xscale("log")
+ax1.set_xscale("log")
 
-ax2.minorticks_on()
-ax2.tick_params(which="major", direction="out", length=4, color=custom_dark_gray)
-ax2.tick_params(which="minor", direction="in", length=0)
-ax2.tick_params(which="both", bottom=True, top=False, left=True, right=False)
-ax2.tick_params(labelbottom=True, labeltop=False, labelleft=True, labelright=False)
-ax2.spines['right'].set_visible(False)
-ax2.spines['top'].set_visible(False)
-ax2.spines['left'].set_color(custom_dark_gray)
-ax2.spines['bottom'].set_color(custom_dark_gray)
-ax2.tick_params(axis='both', colors=custom_dark_gray)
+ax1.minorticks_on()
+ax1.tick_params(which="major", direction="out", length=4, color=custom_dark_gray)
+ax1.tick_params(which="minor", direction="in", length=0)
+ax1.tick_params(which="both", bottom=True, top=False, left=True, right=False)
+ax1.tick_params(labelbottom=True, labeltop=False, labelleft=True, labelright=False)
+ax1.spines['right'].set_visible(False)
+ax1.spines['top'].set_visible(False)
+ax1.spines['left'].set_color(custom_dark_gray)
+ax1.spines['bottom'].set_color(custom_dark_gray)
+ax1.tick_params(axis='both', colors=custom_dark_gray)
 
 # Color filling
-ax2.fill_between(log_space_bins, ecdft(log_space_bins), color="red", alpha=0.1)
+ax1.fill_between(log_space_bins, ecdft(log_space_bins), color="red", alpha=0.1)
 
 #---------------------------------------
 # Alone in the Galaxy line
-ax2.vlines(x=1, 
+ax1.vlines(x=1, 
            color="green", 
            ymin=0, 
            ymax=ecdft(1), 
@@ -964,7 +979,7 @@ text = "Probability of being alone\nin the Milky Way galaxy:\n($N < 1$): " + for
 
 x = 1
 y = min(max(ecdft(1), (ymax * 0.2)), (ymax * 0.9))
-ax2.annotate(text, 
+ax1.annotate(text, 
              xy=(x, y),
              xytext=(-30, 0), 
              textcoords='offset points',
@@ -977,7 +992,7 @@ ax2.annotate(text,
 
 #---------------------------------------
 # Alone in the observable Universe line
-ax2.vlines(x=5*10**-13, 
+ax1.vlines(x=5*10**-13, 
            color="red", 
            ymin=0, 
            ymax=ecdft(5*10**-13), 
@@ -994,7 +1009,7 @@ text = "Probability of being alone in\nthe observable Universe:\n($N < 5 \\times
 x = 10**(-12.3)
 #y = max((ymax * 0.2), min((ecdft(-12.3) * 0.5), (ymax * 0.8)))
 y = min(max(ecdft(-12.3), (ymax * 0.2)), (ymax * 0.9))
-ax2.annotate(text, 
+ax1.annotate(text, 
              xy=(x, y),
              xytext=(-30, 0),
              textcoords='offset points',
@@ -1009,7 +1024,7 @@ ax2.annotate(text,
 # Adjust the vertical and horizontal spacing, so there are no overlapings
 plt.tight_layout()
 
-path = base_path / "figures" / f"Drake_by_Metaculus_PDF_and_CDF_{data_origin}.png"
+path = base_path / "figures" / f"Drake_by_Metaculus_CDF_{data_origin}.png"
 plt.savefig(path, bbox_inches="tight")
 
 #-------------------------------------------------------------------------------------------

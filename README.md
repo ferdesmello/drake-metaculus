@@ -20,7 +20,7 @@ Metaculus has changed the format of the API output ~~twice~~ thrice since I fini
 ## The end estimates
 At the end, you will some figures that you can check on the [figures](https://github.com/ferdesmello/drake-metaculus/blob/main/figures/) folder.
 
-<img src="https://github.com/ferdesmello/drake-metaculus/blob/main/figures/Drake_by_Metaculus_PDF_local_CSVs.png" alt="Distribution of the estimates of the possible number of detectable alien civilizations in our Galaxy by Metaculus." style="height: 789px; width:589px;"/>
+![Final plot](./figures/Drake_by_Metaculus_PDF_local_CSVs.png "Distribution of the estimates of the possible number of detectable alien civilizations in our Galaxy by Metaculus.")
 
 ## The Drake equation
 

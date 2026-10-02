@@ -2,9 +2,9 @@ This README file describes how to interpret the data in this zip file.
 If you have any questions or comments, please contact the Metaculus team: support@metaculus.com.
 
 Metadata:
-This data was exported on 2026-03-28 21:56:33.095451+00:00
+This data was exported on 2026-10-01 04:26:09.477662+00:00
 Contains the data for 1 questions
-Contains the data for 394 aggregate forecasts
+Contains the data for 395 aggregate forecasts
 
 
 # File: README.md
